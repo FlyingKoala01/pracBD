@@ -10,36 +10,6 @@ This module contains the class :class:`Garage`. It will be used to interact with
 GARAGE_SIZE = 10
 FILENAME = "places.dat"
 
-def initialize_file(filename, garage_size=None):
-    """
-    Initializes a `filename` file and fill it with `GARAGE_SIZE` lines of "XXXXXXX".
-
-    :param str filename: Filename indicating the file with the garage information.
-    :param int garage_size: Integer to indicat how many gars are present in the parking lot 
-
-    >>> initialize_file("places.dat", 10)
-    >>> list_spots("placed.dat")
-    0 EMPTY 
-    1 EMPTY 
-    2 EMPTY 
-    3 EMPTY 
-    4 EMPTY 
-    5 EMPTY 
-    6 EMPTY 
-    7 EMPTY 
-    8 EMPTY 
-    9 EMPTY
-
-    """
-
-    if garage_size != None: GARAGE_SIZE = garage_size
-    FILENAME = filename
-
-    f = open(f'{FILENAME}', "w")
-    for i in range(GARAGE_SIZE):
-        f.write("XXXXXXX")
-    f.close()
-
 def occupy_spot(car_id, spot_number=None):
     """
     Fills a a parking spot with `car_id`. If `spot_number` is not given, it will fill the first empty spot found in `FILENAME`
@@ -161,7 +131,6 @@ def list_spots():
     7 EMPTY 
     8 EMPTY 
     9 EMPTY
-    
     """
     f = open(f'{FILENAME}', 'r')
     free_list = []
