@@ -4,6 +4,11 @@ def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
     """
     Checks for user input to be between range indicated by `range_start` and `range_end` returning `out_of_range_message` if input is not valid
 
+
+    :param str prompt: Character indicating the prompt shown in terminal
+    :param int range_start: Integer indicating the beginning of the range 
+    :param int range_end: Integer indicating the end of the range
+    :param str out_of_range_message: Message to be shown in case user input is out of range
     """
     while True:
         candidate = input(f"{prompt} (between {range_start} and {range_end}): ")
@@ -17,9 +22,10 @@ def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
             print("Number not valid!")
 
 def yes_or_no(prompt):
+    options = ["Y", "N", ""] #Empty input is considered as a yes.
     while True:
         candidate = input(f"{prompt} [Y/n]: ").upper()
-        if candidate != "Y" and candidate != "N": return candidate=="Y"
+        if candidate in options: return candidate!="N"
         print("Invalid Option")
 
 def get_valid_spot(max_range):
