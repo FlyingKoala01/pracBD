@@ -19,13 +19,17 @@ def occupy_spot(filename, car_id, spot_number=None):
     f.seek(0)
 
     if spot_number != None:
-        f.seek((7 * spot_number), 0)
+        f.seek((7 * spot_number))
         f.write(car_id)
 
     else:    
-        for i in range(GARAGE_SIZE):
-            if f.readline(7) == "XXXXXXX": break
-
+        for i in range(GARAGE_SIZE - 1):
+            f.seek(7 * i)
+            if f.read(7) == "XXXXXXX":
+                f.seek(7 * i)
+                f.write(car_id) 
+                break
+    
     f.close()
 
 
@@ -34,20 +38,19 @@ def car_status(filename, car_id):
     Returns the number of the car_id's parking slot
     """
     f = open(f'{filename}', 'r+')
-    f.seek(0, 0)
+    f.seek(0)
 
     for i in range(GARAGE_SIZE - 1):
-        if f.readline(7) == (car_id):
-            #spot_number = f.tell()
-            #f.seek(0)
-            f.close()
+        f.seek(7 * i)
+        if  f.read(7) == (car_id):
             print(f'{i} FULL {car_id}')
-            return (i)
-        else:
-            print(f'{car_id} NOT FOUND')
             f.close()
-            return None
+            return (i)
     
+    print(f'{car_id} NOT FOUND')
+    f.close()
+    return None
+
 def leave_spot(filename, car_id):
     """
     Deletes car_id from filename and fills it with "XXXXXXX"
@@ -62,18 +65,13 @@ def spot_status(filename, spot_number):
     Returns the spot status for a given spot number
     """
     f = open(f'{filename}', 'r')
-    for index, line in enumerate(f):
-        if index == spot_number:
-            if line == "XXXXXXX":
-                f.close()
-                return f'{spot_number} EMPTY'
-            else:
-                f.close()
-                return f'{spot_number} {line}'
-        else:
-            f.close()
-            return "Spot Number not found."
-    f.close()
+    spot_car = f.read(7 * spot_number) 
+    if spot_car == "XXXXXXX":
+        f.close()
+        return f'{spot_number} EMPTY'
+    else:
+        f.close()
+        return f'{spot_number} {spot_car}'
 
 def list_spots(filename):
     """
@@ -100,7 +98,12 @@ if __name__ == "__main__":
     #list_spots("places.dat")
     car_status("places.dat", "2310AMN")
 
-    #car_status("places.dat", "1234ABC")
-    #occupy_spot("places.dat", "1234ABC")
-    #car_status("places.dat", "1234ABC")
+    car_status("places.dat", "1234ABC")
+    occupy_spot("places.dat", "1234ABC")
+    car_status("places.dat", "1234ABC")
+
+    leave_spot("places.dat", "2310AMN")
+    leave_spot("places.dat", "1234ABC")
+    car_status("places.dat", "2310AMN")
+    car_status("places.dat", "1234ABC")
     
