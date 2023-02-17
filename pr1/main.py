@@ -1,4 +1,5 @@
 from os import path
+from sys import argv
 import input_manager
 from database import ParkingDatabase, DatabaseCorruptionError, DatabaseNotFoundError
 
@@ -94,8 +95,9 @@ def print_menu():
     print()
 
 if __name__=="__main__":
+    init_if_not_exist = len(argv) == 2 and argv[1] == '-c'
     try:
-        parking_database = ParkingDatabase(DB_FILE_PATH)
+        parking_database = ParkingDatabase(DB_FILE_PATH, PARKING_SIZE, init_if_not_exist=init_if_not_exist)
     except DatabaseCorruptionError:
         print("Database file is corrupt! Please check the format and try again.")
     except DatabaseNotFoundError:
@@ -113,3 +115,5 @@ if __name__=="__main__":
             print()
             MENU_OPTIONS_CALLBACKS[option]()
             print()
+
+        parking_database.end()

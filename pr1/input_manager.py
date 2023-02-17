@@ -51,10 +51,10 @@ def get_valid_spot(max_range):
     """
     return _get_integer_in_range(
         "Enter a parking spot",
-        1, max_range,
+        0, max_range-1,
         "Parking spot out of range!")
 
-def _valid_license_plate(license):
+def valid_license_plate(license):
     """
     Checks if `license` follows the right format indicated by the documentation.
 
@@ -79,7 +79,7 @@ def get_licence_plate():
     while True:
         candidate = input("Enter a license plate (with format `0000AAA`): ")
 
-        if _valid_license_plate(candidate): return candidate
+        if valid_license_plate(candidate): return candidate
 
         print("Invalid license plate, please ensure that you're using the given format.")
 
