@@ -1,3 +1,12 @@
+"""
+==================
+
+This module is used to check whether the input given by
+the user follows the right format indicated by the documentation
+
+==================
+"""
+
 from string import digits, ascii_uppercase
 
 def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
