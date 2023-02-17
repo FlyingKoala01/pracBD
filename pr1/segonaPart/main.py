@@ -13,8 +13,10 @@ def fill_parking_spot(db):
         spot = input_manager.get_valid_spot(PARKING_SIZE)
 
     license_plate = input_manager.get_licence_plate()
-    
-    result = db.insert_vehicle(license_plate, spot)
+    color = input_manager.get_color()
+    brand = input_manager.get_brand()
+
+    result = db.insert_vehicle(license_plate, color, brand, spot)
 
     if result == 0: #Success
         print("Parking spot occupied successfully!")
@@ -47,7 +49,7 @@ def check_parking_spot(db):
     if result == None:
         print("Parking spot empty.")
     else:
-        print(f"Found vehicle with license plate {result} is in this spot.")
+        print(f"Found a {result[1].decode()} {result[2].decode()} with license plate {result[0].decode()} is in this spot.")
 
 def list_empty_spots(db):
     spots = db.empty_spots()
@@ -67,12 +69,39 @@ def find_vehicle(db):
     else:
         print(f"Found vehicle at parking spot {result}.")
 
+def find_vehicle_color(db):
+    vehicle_color = input_manager.get_color()
+    
+    result = db.find_vehicle_color(vehicle_color)
+
+    if result == None:
+        print(f'No {vehicle_color} cars found in the parking.')
+    else:
+        print(f"Found the following vehicles:")
+        for car in result:
+            print(f'Spot: {car[0]} - {car[1][3].decode()} with license plate {car[1][0].decode()}')
+
+def find_vehicle_brand(db):
+    vehicle_brand = input_manager.get_brand()
+    
+    result = db.find_vehicle_brand(vehicle_brand)
+
+    if result == None:
+        print(f'No {vehicle_brand} found in the parking.')
+    else:
+        print(f"Found the following {vehicle_brand}:")
+        for car in result:
+            print(f'Spot: {car[0]} - {car[1][2].decode()} color with license plate {car[1][0].decode()}')
+
+
 MENU_OPTIONS_TEXT = [
     "Occupy a parking spot",
     "Leave parking",
     "Check parking spot availability",
     "List empty parking spots",
     "Find vehicle in the parking",
+    "Find vehicle with a specific color in the parking",
+    "Find vehicle of specific brand in the parking",
     "Exit application"
 ]
 
@@ -81,7 +110,9 @@ MENU_OPTIONS_CALLBACKS = [
     leave_parking_spot,
     check_parking_spot,
     list_empty_spots,
-    find_vehicle
+    find_vehicle,
+    find_vehicle_color,
+    find_vehicle_brand
 ]
 
 def print_menu():

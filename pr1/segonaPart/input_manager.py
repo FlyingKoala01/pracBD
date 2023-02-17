@@ -83,6 +83,23 @@ def get_licence_plate():
 
         print("Invalid license plate, please ensure that you're using the given format.")
 
+def get_color():
+    while True:
+        candidate = input("Enter a car color: ")
+
+        if isinstance(candidate, str): return candidate
+
+        print("Invalid car color.")
+
+def get_brand():
+    while True:
+        candidate = input("Enter a car brand: ")
+
+        if isinstance(candidate, str): return candidate
+
+        print("Invalid car brand.")
+
+
 def get_menu_option(max_option):
     """
     Checks if option given by user is within the range [1:`max_option`]
