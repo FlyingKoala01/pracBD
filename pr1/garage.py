@@ -42,7 +42,18 @@ def initialize_file(filename, garage_size=None):
 
 def occupy_spot(car_id, spot_number=None):
     """
-    Fills a line with a car_id
+    Fills a a parking spot with `car_id`. If `spot_number` is not given, it will fill the first empty spot found in `FILENAME`
+
+    :param str car_id: String to indicate a car's license plate
+    :param int spot_number: integer to indicate a specific parking position
+
+    >>> initialize_file("places.dat", 10)
+    >>> car_status("2310AMN")
+    2310AMN NOT FOUND
+    >>> occupy_spot("2310AMN", 2)
+    >>> car_status("2310AMN")
+    2 FULL 2310AMN
+
     """
     f = open(f'{FILENAME}', 'r+')
     f.seek(0)
@@ -64,7 +75,19 @@ def occupy_spot(car_id, spot_number=None):
 
 def car_status(car_id):
     """
-    Returns the number of the car_id's parking slot
+    Returns the number of `car_id` parking slot
+
+    :param str car_id: String to indicate the car's license plate
+
+    >>> initialize_file("places.dat", 10)
+    >>> car_status("2310AMN")
+    2310AMN NOT FOUND
+    >>> occupy_spot("2310AMN", 2)
+    >>> car_status("2310AMN")
+    2 FULL 2310AMN
+    >>> car_status("2367ABC")
+    2367ABC NOT FOUND
+
     """
     f = open(f'{FILENAME}', 'r+')
     f.seek(0)
@@ -82,29 +105,63 @@ def car_status(car_id):
 
 def leave_spot(car_id):
     """
-    Deletes car_id from filename and fills it with "XXXXXXX"
+    Deletes `car_id` from `FILENAME` and fills it with "XXXXXXX"
+
+    :param str car_id: String indicating the car's license plate.
+
+    >>> initialize_file("places.dat", 10)
+    >>> occupy_spot("2310AMN", 2)
+    >>> leave_spot("2310AMN")
+    2 FULL 2310AMN
+    >>> car_status("2310AMN")
+    2310AMN NOT FOUND
     """
-    spot_number = car_status(FILENAME, car_id)
+    spot_number = car_status(car_id)
     if  spot_number != None:
-        occupy_spot(FILENAME, "XXXXXXX", spot_number)
+        occupy_spot("XXXXXXX", spot_number)
     return
 
 def spot_status(spot_number):
     """
-    Returns the spot status for a given spot number
+    Returns the spot status for a given spot number. If a car is parked, it will print the spot number with the car's license plate.
+    If the spot is empty it will return the spot number and "XXXXXXX".
+
+    :param int spot_number: Integer indicating a spot in the parking lot
+
+    >>> initialize_file("places.dat", 10)
+    >>> occupy_spot("2310AMN", 2)
+    >>> car_status("2310AMN")
+    2 FULL 2310AMN
+    >>> spot_status(2)
+    2 2310AMN
     """
     f = open(f'{FILENAME}', 'r')
-    spot_car = f.read(7 * spot_number) 
+    f.seek(7 * spot_number)
+    spot_car = f.read(7) 
     if spot_car == "XXXXXXX":
         f.close()
-        return f'{spot_number} EMPTY'
+        print(f'{spot_number} EMPTY')
     else:
         f.close()
-        return f'{spot_number} {spot_car}'
+        print(f'{spot_number} {spot_car}')
 
 def list_spots():
     """
     Returns a list of the free spot numbers
+
+    >>> initialize_file("places.dat", 10)
+    >>> list_spots("placed.dat")
+    0 EMPTY 
+    1 EMPTY 
+    2 EMPTY 
+    3 EMPTY 
+    4 EMPTY 
+    5 EMPTY 
+    6 EMPTY 
+    7 EMPTY 
+    8 EMPTY 
+    9 EMPTY
+    
     """
     f = open(f'{FILENAME}', 'r')
     free_list = []
@@ -122,19 +179,19 @@ def list_spots():
 if __name__ == "__main__":
     print("STARTING")
     initialize_file("places.dat", 10)
-    list_spots("places.dat")
+    #list_spots()
 
-    #car_status("places.dat", "2310AMN")
-    #occupy_spot("places.dat", "2310AMN", 2)
-    #list_spots("places.dat")
-    #car_status("places.dat", "2310AMN")
+    car_status("2310AMN")
+    occupy_spot("2310AMN", 2)
+    car_status("2310AMN")
+    spot_status(2)
 
-    #car_status("places.dat", "1234ABC")
-    #occupy_spot("places.dat", "1234ABC")
-    #car_status("places.dat", "1234ABC")
+    # car_status("1234ABC")
+    # occupy_spot("1234ABC")
+    # car_status("1234ABC")
 
-    #leave_spot("places.dat", "2310AMN")
-    #leave_spot("places.dat", "1234ABC")
-    #car_status("places.dat", "2310AMN")
-    #car_status("places.dat", "1234ABC")
+    # leave_spot("2310AMN")
+    # leave_spot("1234ABC")
+    # car_status("2310AMN")
+    # car_status("1234ABC")
     
