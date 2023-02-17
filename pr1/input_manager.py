@@ -1,6 +1,10 @@
 from string import digits, ascii_uppercase
 
 def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
+    """
+    Checks for user input to be between range indicated by `range_start` and `range_end` returning `out_of_range_message` if input is not valid
+
+    """
     while True:
         candidate = input(f"{prompt} (between {range_start} and {range_end}): ")
 

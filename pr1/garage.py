@@ -1,3 +1,11 @@
+"""
+==================
+
+This module contains the class :class:`Garage`. It will be used to interact with the `places.dat` file.
+
+==================
+"""
+
 
 GARAGE_SIZE = 10
 
