@@ -16,6 +16,12 @@ def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
         except ValueError:
             print("Number not valid!")
 
+def yes_or_no(prompt):
+    while True:
+        candidate = input(f"{prompt} [Y/n]: ").upper()
+        if candidate != "Y" and candidate != "N": return candidate=="Y"
+        print("Invalid Option")
+
 def get_valid_spot(max_range):
     return _get_integer_in_range(
         "Enter a parking spot",
