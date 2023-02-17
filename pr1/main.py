@@ -1,22 +1,20 @@
 from os import path
 from sys import argv
 import input_manager
-from database import ParkingDatabase, DatabaseCorruptionError, DatabaseNotFoundError
+from database import ParkingDatabase, DatabaseCorruptionError
 
 PARKING_SIZE = 1000
 PROJECT_ABS_PATH = path.dirname(path.abspath(__file__))
-DB_FILE_PATH = PROJECT_ABS_PATH + "spot_data.dat"
+DB_FILE_PATH = f"{PROJECT_ABS_PATH}/spot_data.dat"
 
-parking_database = None
-
-def fill_parking_spot():
+def fill_parking_spot(db):
     spot = None
     if input_manager.yes_or_no("Do you want to manually select the parking spot?"):
         spot = input_manager.get_valid_spot(PARKING_SIZE)
 
     license_plate = input_manager.get_licence_plate()
     
-    result = parking_database.insert_vehicle(license_plate, spot)
+    result = db.insert_vehicle(license_plate, spot)
 
     if result == 0: #Success
         print("Parking spot occupied successfully!")
@@ -29,10 +27,10 @@ def fill_parking_spot():
     else:
         print("Failed to occupy parking spot: Unknown error.")
 
-def leave_parking_spot():
+def leave_parking_spot(db):
     license_plate = input_manager.get_licence_plate()
     
-    result = parking_database.remove_vehicle(license_plate)
+    result = db.remove_vehicle(license_plate)
 
     if result == 0: #Success
         print("Vehicle left the parking successfully!")
@@ -41,27 +39,28 @@ def leave_parking_spot():
     else:
         print("Failed leave parking: Unknown error.")
 
-def check_parking_spot():
+def check_parking_spot(db):
     spot = input_manager.get_valid_spot(PARKING_SIZE)
 
-    result = parking_database.check_spot(spot)
+    result = db.check_spot(spot)
 
     if result == None:
         print("Parking spot empty.")
     else:
         print(f"Found vehicle with license plate {result} is in this spot.")
 
-def list_empty_spots():
-    spots = parking_database.empty_spots()
+def list_empty_spots(db):
+    spots = db.empty_spots()
 
     # To ensure user really wants a spamming input in their CLI
     if len(spots) < 30 or input_manager.yes_or_no(f"Display all {len(spots)} spots?"):
-        print(f"Empty parking spots ({len(spots)}): {', '.join(spots)}.")
+        spots_str = [str(spot) for spot in spots]
+        print(f"Empty parking spots ({len(spots)}): {', '.join(spots_str)}.")
 
-def find_vehicle():
+def find_vehicle(db):
     license_plate = input_manager.get_licence_plate()
     
-    result = parking_database.find_vehicle(license_plate)
+    result = db.find_vehicle(license_plate)
 
     if result == None:
         print("This vehicle is not in the parking.")
@@ -90,8 +89,8 @@ def print_menu():
     print("PARKING MANAGER MENU")
     print("="*20 + "\n")
     print("Options:")
-    for i in range(MENU_OPTIONS_TEXT):
-        print(f" {i}: {MENU_OPTIONS_TEXT[i]}")
+    for i in range(len(MENU_OPTIONS_TEXT)):
+        print(f" {i+1}: {MENU_OPTIONS_TEXT[i]}")
     print()
 
 if __name__=="__main__":
@@ -100,7 +99,7 @@ if __name__=="__main__":
         parking_database = ParkingDatabase(DB_FILE_PATH, PARKING_SIZE, init_if_not_exist=init_if_not_exist)
     except DatabaseCorruptionError:
         print("Database file is corrupt! Please check the format and try again.")
-    except DatabaseNotFoundError:
+    except FileNotFoundError:
         print("Database file not found! Run this program with `-c` to create it if it doesn't exist.")
     else:
 
@@ -108,12 +107,12 @@ if __name__=="__main__":
             print_menu()
             option = input_manager.get_menu_option(len(MENU_OPTIONS_TEXT))
 
-            if option == len(MENU_OPTIONS_CALLBACKS): # User wants to exit
+            if option == len(MENU_OPTIONS_TEXT): # User wants to exit
                 print("Thanks for using this application!")
                 break
 
             print()
-            MENU_OPTIONS_CALLBACKS[option]()
+            MENU_OPTIONS_CALLBACKS[option-1](parking_database)
             print()
 
         parking_database.end()

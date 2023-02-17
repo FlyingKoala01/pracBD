@@ -4,9 +4,6 @@ from input_manager import valid_license_plate
 class DatabaseCorruptionError(Exception):
     pass
 
-class DatabaseNotFoundError(FileNotFoundError):
-    pass
-
 class ParkingDatabase():
     def __init__(self, db_file, parking_size, init_if_not_exist=False):
         self.parking_size = parking_size
@@ -33,10 +30,11 @@ class ParkingDatabase():
 
         for _ in range(self.parking_size):
             data = self.db.read(7)
-            if data != "XXXXXXX" and valid_license_plate(data):
+            if data != "XXXXXXX" and not valid_license_plate(data):
                 return False
 
-        return True
+        # Checking that we have reached the end of file.
+        return self.db.read(1) == ""
 
     def _first_empty_spot(self):
         self.db.seek(0)
