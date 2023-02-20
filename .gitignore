@@ -1,3 +1,6 @@
 #Prac1: Database and cache
-pr1/spot_data.dat
-pr1/__pycache__
+pr1_1/src/spot_data.dat
+pr1_1/src/__pycache__
+
+pr1_2/src/spot_data.dat
+pr1_2/src/__pycache__
