@@ -92,17 +92,13 @@ class ParkingDatabase():
         Checks all the license plates in the db. If any plate is not well formatted, it returns `False`.
         """
 
-        self.db.seek(0)
-
-        for i in range(self.parking_size):
-            buffer = self.db.read(DB_RECORD_LENGTH)
-
-            if len(buffer) != DB_RECORD_LENGTH:
-                return False
-
-            vehicle = self.__load_vehicle(spot=None)
-            if vehicle.license_plate != PLACEHOLDER_LICENSE_PLATE and not valid_license_plate(vehicle.license_plate):
-                return False
+        # All errors due to reading the file will be considered as corruption.
+        try:
+            for spot in self.__parking_spots_loop():
+                if spot.occupied() and not valid_license_plate(spot.vehicle.license_plate):
+                    return False
+        except:
+            return False
 
         # Checking that we have reached the end of file.
         return self.db.read(1).decode() == ""
@@ -113,7 +109,7 @@ class ParkingDatabase():
         """
         for spot in self.__parking_spots_loop():
             if not spot.occupied():
-                return spot
+                return spot.number
 
         return None
 
