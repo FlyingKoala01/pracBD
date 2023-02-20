@@ -8,8 +8,8 @@ The module will be used to interact with the `spot_data.dat` file. It contains t
 - The exception :class:`DatabaseCorruptionError`, that is raised when the db file is corrupted.
 
 ==================
-
 """
+
 from os import path
 from input_manager import valid_license_plate
 
