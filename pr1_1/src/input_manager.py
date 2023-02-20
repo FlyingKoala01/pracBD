@@ -13,7 +13,6 @@ def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
     """
     Checks for user input to be between range indicated by `range_start` and `range_end` returning `out_of_range_message` if input is not valid
 
-
     :param str prompt: String indicating the prompt shown in terminal
     :param int range_start: Integer indicating the beginning of the range 
     :param int range_end: Integer indicating the end of the range
@@ -34,8 +33,8 @@ def yes_or_no(prompt):
     """
     Checks for user input to be "Y", "N", or ""
 
-
     :param str prompt: Character indicating the prompt shown in terminal
+
     """
     options = ["Y", "N", ""] #Empty input is considered as a yes.
     while True:
@@ -59,6 +58,15 @@ def valid_license_plate(license):
     Checks if `license` follows the right format indicated by the documentation.
 
     :param str license: String indicating the license to be checked
+
+    >>> valid_license_plate("1234ABC")
+    True
+    >>> valid_license_plate("12ABCDEF")
+    False
+    >>> valid_license_plate("12345BC")
+    False
+    >>> valid_license_plate("1234abc")
+    False
     """
     if len(license) != 7: return False
 

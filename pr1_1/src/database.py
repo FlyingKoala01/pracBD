@@ -26,12 +26,19 @@ class DatabaseCorruptionError(Exception):
     pass
 
 class ParkingDatabase():
+    """
+    This class represents a DataBase storing information about a garage.
+    Specifically, it will store license plates.
+    
+    """
     def __init__(self, db_file, parking_size, init_if_not_exist=False):
         """
         Initialize the `db_file` with `parking_size` car-spaces.
 
         :param str db_file: String indicating the database file name
         :param int parking_size: Integer indicating how many cars will fit in the parking
+        
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         """
         self.parking_size = parking_size
         self.db = self.__open_db_file(db_file, init_if_not_exist)
@@ -99,7 +106,16 @@ class ParkingDatabase():
         look specifically for that spot, otherwise, it will park in the first free space.
 
         :param str license_plate: String to indicate car's plate
-        :param int spot: Indicating a specific parking space 
+        :param int spot: Indicating a specific parking space
+
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db.insert_vehicle("1234ABC", 1)
+        >>> db.insert_vehicle("9876DEF")
+        >>> print(db.check_spot(0))
+        9876DEF
+        >>> print(db.check_spot(1))
+        1234ABC
+
         """
         if spot == None:
             spot = self._first_empty_spot()
@@ -124,6 +140,16 @@ class ParkingDatabase():
         Function used to remove a specific car with `license_plate`.
 
         :param str license_plate: String to indicate car's plate
+
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db.insert_vehicle("1234ABC")
+        3
+        >>> print(db.check_spot(1))
+        1234ABC
+        >>> db.remove_vehicle("1234ABC")
+        >>> print(db.check_spot(1))
+        None
+
         """
         spot =  self.find_vehicle(license_plate)
         if spot == None: return 1
@@ -138,6 +164,13 @@ class ParkingDatabase():
         Used to check if for a specific spot `spot_number`, there is a car parked or not
 
         :param int spot_number: Indicating a specific parking space 
+        
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> print(db.check_spot(0))
+        9876DEF
+        >>> print(db.check_spot(1))
+        None
+        
         """
         self.db.seek(7 * spot_number)
         license_plate = self.db.read(7) 
@@ -147,6 +180,14 @@ class ParkingDatabase():
     def empty_spots(self):
         """
         Returns a list of the empty spots in the db.
+
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> a = len(db.empty_spots())
+        >>> db.insert_vehicle("3256AGH")
+        >>> b = len(db.empty_spots())
+        >>> print(a == b)
+        False
+        
         """
         free_spots = []
         self.db.seek(0)
@@ -162,6 +203,12 @@ class ParkingDatabase():
         Searches for the parking space number for a given car with `license_plate`
 
         :param str license_plate: String to indicate car's plate
+
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db.insert_vehicle("1234ABC")
+        >>> place = db.find_vehicle("1234ABC")
+        >>> print(db.check_spot(place))
+        1234ABC
         """
         self.db.seek(0)
 
