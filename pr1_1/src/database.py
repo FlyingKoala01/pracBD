@@ -3,12 +3,12 @@
 
 The module will be used to interact with the `spot_data.dat` file. It contains the following classes:
 
-
 - The parent class :class:`ParkingDatabase`. It is used to interact with the db.
 
 - The exception :class:`DatabaseCorruptionError`, that is raised when the db file is corrupted.
 
 ==================
+
 """
 from os import path
 from input_manager import valid_license_plate
@@ -23,6 +23,7 @@ class DatabaseCorruptionError(Exception):
      ...
     database.DatabaseCorruptionError: test
     """
+
     pass
 
 class ParkingDatabase():
@@ -31,6 +32,7 @@ class ParkingDatabase():
     Specifically, it will store license plates.
     
     """
+
     def __init__(self, db_file, parking_size, init_if_not_exist=False):
         """
         Initialize the `db_file` with `parking_size` car-spaces.
@@ -40,6 +42,7 @@ class ParkingDatabase():
         
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         """
+
         self.parking_size = parking_size
         self.db = self.__open_db_file(db_file, init_if_not_exist)
         if not self._is_db_valid(): raise DatabaseCorruptionError
@@ -47,13 +50,16 @@ class ParkingDatabase():
     def end(self):
         """
         Closes the database file. Used when user exists the menu.
+
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> db.end()
         >>> db.insert_vehicle("9877JKL")
         Traceback (most recent call last):
          ...
         ValueError: I/O operation on closed file.
+
         """
+
         self.db.close()
 
     def __open_db_file(self, file, init_if_not_exist):
@@ -64,6 +70,7 @@ class ParkingDatabase():
         :param bool init_if_not_exist: Boolean value indicating if the `file` exists or not
 
         """
+
         if not init_if_not_exist or path.exists(file):
             return open(file, 'r+')
         else:
@@ -76,13 +83,16 @@ class ParkingDatabase():
         Initializes the database in `file`. Fills the car spaces with "XXXXXXX".
 
         :param str file: String indicating the file name
+
         """
+
         # We suppose that the file has been just opened and was empty.
         file.write("XXXXXXX" * self.parking_size)
 
     def _is_db_valid(self):
         """
         Checks all the license plates in the db. If any plate is not well formatted, it returns `False`.
+
         """
 
         self.db.seek(0)
@@ -98,7 +108,9 @@ class ParkingDatabase():
     def _first_empty_spot(self):
         """
         Function to find the first empty spot in the db indicated by "XXXXXXX". Returns the spot number if one is found.
+
         """
+
         self.db.seek(0)
 
         for i in range(self.parking_size):
@@ -123,7 +135,9 @@ class ParkingDatabase():
         9876DEF
         >>> db.remove_vehicle("9876DEF")
         0
+
         """
+
         if spot == None:
             spot = self._first_empty_spot()
             # If still empty, parking full (Error 2)
@@ -159,7 +173,9 @@ class ParkingDatabase():
         None
         >>> db.remove_vehicle("7865FTH")
         1
+
         """
+
         spot =  self.find_vehicle(license_plate)
         if spot == None: return 1
 
@@ -181,7 +197,9 @@ class ParkingDatabase():
         9878RTY
         >>> db.remove_vehicle("9878RTY")
         0
+
         """
+
         self.db.seek(7 * spot_number)
         license_plate = self.db.read(7) 
 
@@ -202,6 +220,7 @@ class ParkingDatabase():
         0
         
         """
+
         free_spots = []
         self.db.seek(0)
 
@@ -225,7 +244,9 @@ class ParkingDatabase():
         3712LOK
         >>> db.remove_vehicle("3712LOK")
         0
+
         """
+        
         self.db.seek(0)
 
         for i in range(self.parking_size):

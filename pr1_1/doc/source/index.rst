@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-=======================
-PRIMERA PART PRÀCTICA 1 
-=======================
+===============================
+DOCUMENTATION FIRST PART LAB 1
+===============================
 
 .. image:: upc.jpg 	
    :width: 350
