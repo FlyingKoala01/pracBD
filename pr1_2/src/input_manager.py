@@ -7,7 +7,7 @@ the user follows the right format indicated by the documentation
 ==================
 """
 
-from string import digits, ascii_uppercase
+from vehicle import valid_license_plate
 
 def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
     """
@@ -54,23 +54,6 @@ def get_valid_spot(max_range):
         0, max_range-1,
         "Parking spot out of range!")
 
-def valid_license_plate(license):
-    """
-    Checks if `license` follows the right format indicated by the documentation.
-
-    :param str license: String indicating the license to be checked
-    """
-    if len(license) != 7: return False
-
-    for i in range(0, 4):
-        if license[i] not in digits: return False
-    
-    for i in range(4, 7):
-        if license[i] not in ascii_uppercase: return False
-
-    return True
-
-
 def get_licence_plate():
     """
     Checks if the license given by the user input follows the right format indicated by the documentation.
@@ -83,22 +66,13 @@ def get_licence_plate():
 
         print("Invalid license plate, please ensure that you're using the given format.")
 
-def get_color():
+def get_attribute(attribute_name):
     while True:
-        candidate = input("Enter a car color: ")
+        candidate = input(f"Enter vehicle's {attribute_name} (max. 10 chars): ")
 
         if isinstance(candidate, str): return candidate
 
-        print("Invalid car color.")
-
-def get_brand():
-    while True:
-        candidate = input("Enter a car brand: ")
-
-        if isinstance(candidate, str): return candidate
-
-        print("Invalid car brand.")
-
+        print(f"Vehicle's {attribute_name} too long!")
 
 def get_menu_option(max_option):
     """

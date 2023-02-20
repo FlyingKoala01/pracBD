@@ -1,7 +1,10 @@
 from os import path
 from sys import argv
+from time import sleep
+
 import input_manager
 from database import ParkingDatabase, DatabaseCorruptionError
+from vehicle import Vehicle
 
 PARKING_SIZE = 1000
 PROJECT_ABS_PATH = path.dirname(path.abspath(__file__))
@@ -13,10 +16,13 @@ def fill_parking_spot(db):
         spot = input_manager.get_valid_spot(PARKING_SIZE)
 
     license_plate = input_manager.get_licence_plate()
-    color = input_manager.get_color()
-    brand = input_manager.get_brand()
+    color = input_manager.get_attribute("color")
+    brand = input_manager.get_attribute("brand")
 
-    result = db.insert_vehicle(license_plate, color, brand, spot)
+    vehicle = Vehicle(license_plate, color, brand)
+    result = db.insert_vehicle(vehicle, spot)
+
+    print()
 
     if result == 0: #Success
         print("Parking spot occupied successfully!")
@@ -31,8 +37,9 @@ def fill_parking_spot(db):
 
 def leave_parking_spot(db):
     license_plate = input_manager.get_licence_plate()
-    
     result = db.remove_vehicle(license_plate)
+
+    print()
 
     if result == 0: #Success
         print("Vehicle left the parking successfully!")
@@ -43,16 +50,21 @@ def leave_parking_spot(db):
 
 def check_parking_spot(db):
     spot = input_manager.get_valid_spot(PARKING_SIZE)
-
     result = db.check_spot(spot)
+
+    print()
 
     if result == None:
         print("Parking spot empty.")
     else:
-        print(f"Found a {result[1].decode()} {result[2].decode()} with license plate {result[0].decode()} is in this spot.")
+        print(f"Vehicle found in spot {spot}: {result}")
 
 def list_empty_spots(db):
     spots = db.empty_spots()
+
+    if len(spots) == 0:
+        print("Parking full! There aren't any empty spots.")
+        return
 
     # To ensure user really wants a spamming input in their CLI
     if len(spots) < 30 or input_manager.yes_or_no(f"Display all {len(spots)} spots?"):
@@ -61,37 +73,40 @@ def list_empty_spots(db):
 
 def find_vehicle(db):
     license_plate = input_manager.get_licence_plate()
-    
     result = db.find_vehicle(license_plate)
+
+    print()
 
     if result == None:
         print("This vehicle is not in the parking.")
     else:
-        print(f"Found vehicle at parking spot {result}.")
+        print(f"Found vehicle with license plate {license_plate} at parking spot {result}.")
 
 def find_vehicle_color(db):
-    vehicle_color = input_manager.get_color()
-    
-    result = db.find_vehicle_color(vehicle_color)
+    color = input_manager.get_attribute("color")
+    vehicles = db.find_vehicles_with_color(color)
 
-    if result == None:
-        print(f'No {vehicle_color} cars found in the parking.')
-    else:
-        print(f"Found the following vehicles:")
-        for car in result:
-            print(f'Spot: {car[0]} - {car[1][3].decode()} with license plate {car[1][0].decode()}')
+    print()
+
+    if len(vehicles) == 0:
+        print(f'No {color} vehicles found in the parking.')
+    elif len(vehicles) < 10 or input_manager.yes_or_no(f"Display all {len(vehicles)} vehicles?"):
+        print(f"Vehicles with [color == '{color}']:")
+        for vehicle in vehicles:
+            print(f'- Spot {vehicle.spot}: {vehicle}.')
 
 def find_vehicle_brand(db):
-    vehicle_brand = input_manager.get_brand()
-    
-    result = db.find_vehicle_brand(vehicle_brand)
+    brand = input_manager.get_attribute("brand")
+    vehicles = db.find_vehicles_with_color(brand)
 
-    if result == None:
-        print(f'No {vehicle_brand} found in the parking.')
-    else:
-        print(f"Found the following {vehicle_brand}:")
-        for car in result:
-            print(f'Spot: {car[0]} - {car[1][2].decode()} color with license plate {car[1][0].decode()}')
+    print()
+
+    if len(vehicles) == 0:
+        print(f'No {brand} vehicles found in the parking.')
+    elif len(vehicles) < 10 or input_manager.yes_or_no(f"Display all {len(vehicles)} vehicles?"):
+        print(f"Vehicles with [brand == '{brand}']:")
+        for vehicle in vehicles:
+            print(f'- Spot {vehicle.spot}: {vehicle}.')
 
 
 MENU_OPTIONS_TEXT = [
@@ -144,6 +159,8 @@ if __name__=="__main__":
 
             print()
             MENU_OPTIONS_CALLBACKS[option-1](parking_database)
+            # We wait 1 sec in order to let the user read the result.
+            sleep(1)
             print()
 
         parking_database.end()
