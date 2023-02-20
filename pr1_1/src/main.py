@@ -19,7 +19,7 @@ def fill_parking_spot(db):
     """
     Used to fill a specific, if required, parking slot with a given license plate.
 
-    :param :class:`ParkingDatabase`: Indicates which database file is being written to
+    :param `ParkingDatabase`: Indicates which database file is being written to
     """
     spot = None
     if input_manager.yes_or_no("Do you want to manually select the parking spot?"):
@@ -44,7 +44,7 @@ def leave_parking_spot(db):
     """
     Used to delete a car from a parking slot.
 
-    :param :class:`ParkingDatabase`: Indicates which database file is being written to
+    :param `ParkingDatabase`: Indicates which database file is being written to
     """
     license_plate = input_manager.get_licence_plate()
     
@@ -61,7 +61,7 @@ def check_parking_spot(db):
     """
     Check the parking slot for a specific license plate in database
 
-    :param :class:`ParkingDatabase`: Indicates which database file is being read from
+    :param `ParkingDatabase`: Indicates which database file is being read from
     """
     spot = input_manager.get_valid_spot(PARKING_SIZE)
 
@@ -76,7 +76,7 @@ def list_empty_spots(db):
     """
     Returns a list indicating all the free spaces in the database
 
-    :param :class:`ParkingDatabase`: Indicates which database file is being read from
+    :param `ParkingDatabase`: Indicates which database file is being read from
     """
     spots = db.empty_spots()
 
@@ -89,7 +89,7 @@ def find_vehicle(db):
     """
     Find the parking slot for a specific license plate in the database
 
-    :param :class:`ParkingDatabase`: Indicates which database file is being read from
+    :param `ParkingDatabase`: Indicates which database file is being read from
     """
     license_plate = input_manager.get_licence_plate()
     
