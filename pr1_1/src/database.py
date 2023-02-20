@@ -229,6 +229,22 @@ class ParkingDatabase():
                 free_spots.append(i)
 
         return free_spots
+    
+    def full_spots(self):
+        """
+        Returns a list of the full spots in the db.
+        
+        """
+
+        free_spots = []
+        self.db.seek(0)
+
+        for i in range(self.parking_size):
+            license_plate = self.db.read(7)
+            if license_plate != "XXXXXXX":
+                free_spots.append((i, license_plate))
+
+        return free_spots
 
     def find_vehicle(self, license_plate):
         """
@@ -254,6 +270,19 @@ class ParkingDatabase():
                 return i
         
         return None
+    
+    def oldest_vehicles(self):
+        license_plates = [x[1] for x in self.full_spots()]
+        license_plates.sort(key = license_plate_to_alphanumeric)
+        return license_plates
 
-    # TODO: check if file is deleted
+def license_plate_to_alphanumeric(license_plate) -> int:
+    """
+    Returns an integer representing the license plate. The number isn't very
+    important, what matters is that an older license_plate will always have
+    a smaller number.
 
+    license_plate MUST be a valid license plate
+    """
+    fixed_license_plate = license_plate[4:] + license_plate[:4]
+    return int.from_bytes(fixed_license_plate.encode(), 'big')
