@@ -68,45 +68,45 @@ def list_empty_spots(db):
 
     # To ensure user really wants a spamming input in their CLI
     if len(spots) < 30 or input_manager.yes_or_no(f"Display all {len(spots)} spots?"):
-        spots_str = [str(spot) for spot in spots]
+        spots_str = [str(spot.number) for spot in spots]
         print(f"Empty parking spots ({len(spots)}): {', '.join(spots_str)}.")
 
 def find_vehicle(db):
     license_plate = input_manager.get_licence_plate()
-    result = db.find_vehicle(license_plate)
+    spot = db.find_vehicle(license_plate)
 
     print()
 
-    if result == None:
+    if spot == None:
         print("This vehicle is not in the parking.")
     else:
-        print(f"Found vehicle with license plate {license_plate} at parking spot {result}.")
+        print(f"Found at {spot}.")
 
 def find_vehicle_color(db):
     color = input_manager.get_attribute("color")
-    vehicles = db.find_vehicles_with_color(color)
+    spots = db.find_vehicles_with_brand(color)
 
     print()
 
-    if len(vehicles) == 0:
+    if len(spots) == 0:
         print(f'No {color} vehicles found in the parking.')
-    elif len(vehicles) < 10 or input_manager.yes_or_no(f"Display all {len(vehicles)} vehicles?"):
+    elif len(spots) < 10 or input_manager.yes_or_no(f"Display all {len(spots)} vehicles?"):
         print(f"Vehicles with [color == '{color}']:")
-        for vehicle in vehicles:
-            print(f'- Spot {vehicle.spot}: {vehicle}.')
+        for spot in spots:
+            print(f'- {spot}.')
 
 def find_vehicle_brand(db):
     brand = input_manager.get_attribute("brand")
-    vehicles = db.find_vehicles_with_color(brand)
+    spots = db.find_vehicles_with_brand(brand)
 
     print()
 
-    if len(vehicles) == 0:
+    if len(spots) == 0:
         print(f'No {brand} vehicles found in the parking.')
-    elif len(vehicles) < 10 or input_manager.yes_or_no(f"Display all {len(vehicles)} vehicles?"):
+    elif len(spots) < 10 or input_manager.yes_or_no(f"Display all {len(spots)} vehicles?"):
         print(f"Vehicles with [brand == '{brand}']:")
-        for vehicle in vehicles:
-            print(f'- Spot {vehicle.spot}: {vehicle}.')
+        for spot in spots:
+            print(f'- {spot}.')
 
 
 MENU_OPTIONS_TEXT = [

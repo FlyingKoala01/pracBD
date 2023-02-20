@@ -24,17 +24,15 @@ class Vehicle:
     COLOR_MAX_LENGTH = 10
     LICENSE_PLATE_LENGTH = 7
 
-    def __init__(self, license_plate, color, brand, spot=None) -> None:
+    def __init__(self, license_plate, color, brand) -> None:
         """
         Attributes can be bytes or string
         """
         self.license_plate = license_plate if type(license_plate) == str else license_plate.decode()
         self.color = color if type(color) == str else color.decode()
         self.brand = brand if type(brand) == str else brand.decode()
-        # Vehicles may contain a parking spot in certain use cases
-        self.spot = spot
 
-    def validate(self) -> tuple(bool, str):
+    def validate(self) -> tuple:
         """
         Returns (bool, str) with (True, "Valid vehicle") or (False, "Reason").
         """

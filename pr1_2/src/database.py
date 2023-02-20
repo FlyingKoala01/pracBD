@@ -13,6 +13,7 @@ The module will be used to interact with the `spot_data.dat` file. It contains t
 from os import path
 import struct
 from vehicle import valid_license_plate, Vehicle
+from parking_spot import ParkingSpot
 
 DB_RECORD_LENGTH = Vehicle.COLOR_MAX_LENGTH + Vehicle.BRAND_MAX_LENGTH + Vehicle.LICENSE_PLATE_LENGTH
 STRUCT_FORMAT = f"{Vehicle.LICENSE_PLATE_LENGTH}s{Vehicle.COLOR_MAX_LENGTH}s{Vehicle.BRAND_MAX_LENGTH}s"
@@ -68,8 +69,23 @@ class ParkingDatabase():
         :param str file: String indicating the file name
         """
         # We suppose that the file has been just opened and was empty.
-        placeholder_pack = struct.pack(STRUCT_FORMAT, PLACEHOLDER_VEHICLE.encode())
+        placeholder_pack = struct.pack(STRUCT_FORMAT, *PLACEHOLDER_VEHICLE.encode())
         file.write(placeholder_pack * self.parking_size)
+
+    def __load_vehicle(self, spot=None):
+
+        if spot != None: self.db.seek(spot*DB_RECORD_LENGTH)
+
+        current = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH))
+        return Vehicle(*current)
+    
+    def __parking_spots_loop(self):
+        self.db.seek(0)
+        for i in range(self.parking_size):
+            current = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH))
+            vehicle = Vehicle(*current)
+            parking_spot = ParkingSpot(i, vehicle if vehicle.license_plate != PLACEHOLDER_LICENSE_PLATE else None)
+            yield parking_spot
 
     def _is_db_valid(self):
         """
@@ -78,24 +94,26 @@ class ParkingDatabase():
 
         self.db.seek(0)
 
-        for _ in range(self.parking_size):
-            [license_plate, _, _] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH))
-            if license_plate.decode() != PLACEHOLDER_LICENSE_PLATE and not valid_license_plate(license_plate.decode()):
+        for i in range(self.parking_size):
+            buffer = self.db.read(DB_RECORD_LENGTH)
+
+            if len(buffer) != DB_RECORD_LENGTH:
+                return False
+
+            vehicle = self.__load_vehicle(spot=None)
+            if vehicle.license_plate != PLACEHOLDER_LICENSE_PLATE and not valid_license_plate(vehicle.license_plate):
                 return False
 
         # Checking that we have reached the end of file.
         return self.db.read(1).decode() == ""
 
-    def _first_empty_spot(self):
+    def _first_empty_spot_number(self):
         """
         Function to find the first empty spot in the db indicated by PLACEHOLDER_LICENSE_PLATE. Returns the spot number if one is found.
         """
-        self.db.seek(0)
-
-        for i in range(self.parking_size):
-            [license_plate, _, _] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH))
-            if license_plate.decode() == PLACEHOLDER_LICENSE_PLATE:
-                return i
+        for spot in self.__parking_spots_loop():
+            if not spot.occupied():
+                return spot
 
         return None
 
@@ -108,22 +126,21 @@ class ParkingDatabase():
         :param int spot: Indicating a specific parking space 
         """
         if spot == None:
-            spot = self._first_empty_spot()
+            spot = self._first_empty_spot_number()
             # If still empty, parking full (Error 2)
             if spot == None: return 2
 
         else:
             # Checking if given spot is available
-            self.db.seek(DB_RECORD_LENGTH*spot)
+            vehicle = self.__load_vehicle(spot)
             # Spot occupied (Error 1)
-            [temp_lp, _, _] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH))
-            if temp_lp.decode() != PLACEHOLDER_LICENSE_PLATE: return 1
+            if vehicle.license_plate != PLACEHOLDER_LICENSE_PLATE: return 1
 
         # Check if car is already in parking (Error 3)
         if self.find_vehicle(vehicle.license_plate) != None: return 3
 
         self.db.seek(DB_RECORD_LENGTH*spot)
-        self.db.write(struct.pack(STRUCT_FORMAT, vehicle.encode()))
+        self.db.write(struct.pack(STRUCT_FORMAT, *vehicle.encode()))
         return 0
 
     def remove_vehicle(self, license_plate):
@@ -136,9 +153,7 @@ class ParkingDatabase():
         if spot == None: return 1
 
         self.db.seek(DB_RECORD_LENGTH*spot)
-        car_pack = struct.pack(STRUCT_FORMAT, PLACEHOLDER_VEHICLE.encode())
-        self.db.write(car_pack * self.parking_size)
-
+        self.db.write(struct.pack(STRUCT_FORMAT, *PLACEHOLDER_VEHICLE.encode()))
         return 0
 
     def check_spot(self, spot_number):
@@ -148,60 +163,48 @@ class ParkingDatabase():
         :param int spot_number: Indicating a specific parking space 
         """
         self.db.seek(DB_RECORD_LENGTH*spot_number)
-        [lp, color, brand] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH) )
+        vehicle = self.__load_vehicle(spot_number)
 
-        return None if lp.decode() == PLACEHOLDER_LICENSE_PLATE else Vehicle(lp, color, brand)
+        return None if vehicle.license_plate == PLACEHOLDER_LICENSE_PLATE else vehicle
 
     def empty_spots(self):
         """
         Returns a list of the empty spots in the db.
         """
-        free_spots = []
-        self.db.seek(0)
+        candidates = []
 
-        for i in range(self.parking_size):
-            [license_plate, _, _] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH))
-            if license_plate.decode() == PLACEHOLDER_LICENSE_PLATE:
-                free_spots.append(i)
+        for spot in self.__parking_spots_loop():
+            if not spot.occupied():
+                candidates.append(spot)
 
-        return free_spots
+        return candidates
 
-    def find_vehicle(self, license_plate: str) -> (int or None):
+    def find_vehicle(self, license_plate: str) -> (ParkingSpot or None):
         """
         Searches for the parking space number for a given car with `license_plate`
 
         :param str license_plate: String to indicate car's plate
         """
-        self.db.seek(0)
-
-        for i in range(self.parking_size):
-            [license_plate, _, _] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH))
-            if license_plate.decode() == license_plate:
-                return i
+        for spot in self.__parking_spots_loop():
+            if spot.occupied() and spot.vehicle.license_plate == license_plate:
+                return spot
         
         return None
 
     def find_vehicles_with_color(self, color: str) -> list:
         candidates = []
-        self.db.seek(0)
 
-        for spot in range(self.parking_size):
-            [current_lp, current_color, current_brand] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH)) 
-            if current_color.decode() == color:
-                candidates.append(Vehicle(current_lp, current_color, current_brand, spot))
-        
+        for spot in self.__parking_spots_loop():
+            if spot.occupied() and spot.vehicle.color == color:
+                candidates.append(spot)
+
         return candidates
 
     def find_vehicles_with_brand(self, brand: str) -> list:
         candidates = []
-        self.db.seek(0)
 
-        for spot in range(self.parking_size):
-            [current_lp, current_color, current_brand] = struct.unpack(STRUCT_FORMAT, self.db.read(DB_RECORD_LENGTH)) 
-            if current_brand.decode() == brand:
-                candidates.append(Vehicle(current_lp, current_color, current_brand, spot))
-        
+        for spot in self.__parking_spots_loop():
+            if spot.occupied() and spot.vehicle.brand == brand:
+                candidates.append(spot)
+
         return candidates
-
-    # TODO: check if file is deleted
-
