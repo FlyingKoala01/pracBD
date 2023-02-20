@@ -1,5 +1,5 @@
 =================================
-PRÀCTICA 1.1 Input Manager module
+PRÀCTICA 1.2 Input Manager module
 =================================
 
 

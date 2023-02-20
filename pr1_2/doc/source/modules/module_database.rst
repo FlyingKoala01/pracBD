@@ -1,5 +1,5 @@
 ============================
-PRÀCTICA 1.1 database module
+PRÀCTICA 1.2 database module
 ============================
 
 
