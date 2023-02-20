@@ -29,8 +29,8 @@ class Vehicle:
         Attributes can be bytes or string
         """
         self.license_plate = license_plate if type(license_plate) == str else license_plate.decode()
-        self.color = color if type(color) == str else color.decode()
-        self.brand = brand if type(brand) == str else brand.decode()
+        self.color = color if type(color) == str else color.decode().strip('\x00')
+        self.brand = brand if type(brand) == str else brand.decode().strip('\x00')
 
     def validate(self) -> tuple:
         """
