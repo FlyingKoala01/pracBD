@@ -47,6 +47,12 @@ class ParkingDatabase():
     def end(self):
         """
         Closes the database file. Used when user exists the menu.
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db.end()
+        >>> db.insert_vehicle("9877JKL")
+        Traceback (most recent call last):
+         ...
+        ValueError: I/O operation on closed file.
         """
         self.db.close()
 
@@ -56,6 +62,7 @@ class ParkingDatabase():
 
         :param str file: String indicating the file name
         :param bool init_if_not_exist: Boolean value indicating if the `file` exists or not
+
         """
         if not init_if_not_exist or path.exists(file):
             return open(file, 'r+')
@@ -109,13 +116,13 @@ class ParkingDatabase():
         :param int spot: Indicating a specific parking space
 
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
-        >>> db.insert_vehicle("1234ABC", 1)
         >>> db.insert_vehicle("9876DEF")
-        >>> print(db.check_spot(0))
+        0
+        >>> place = db.find_vehicle("9876DEF")
+        >>> print(db.check_spot(place))
         9876DEF
-        >>> print(db.check_spot(1))
-        1234ABC
-
+        >>> db.remove_vehicle("9876DEF")
+        0
         """
         if spot == None:
             spot = self._first_empty_spot()
@@ -142,14 +149,16 @@ class ParkingDatabase():
         :param str license_plate: String to indicate car's plate
 
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
-        >>> db.insert_vehicle("1234ABC")
-        3
-        >>> print(db.check_spot(1))
-        1234ABC
-        >>> db.remove_vehicle("1234ABC")
+        >>> db.insert_vehicle("7865FTH", 565)
+        0
+        >>> print(db.check_spot(565))
+        7865FTH
+        >>> db.remove_vehicle("7865FTH")
+        0
         >>> print(db.check_spot(1))
         None
-
+        >>> db.remove_vehicle("7865FTH")
+        1
         """
         spot =  self.find_vehicle(license_plate)
         if spot == None: return 1
@@ -166,11 +175,12 @@ class ParkingDatabase():
         :param int spot_number: Indicating a specific parking space 
         
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
-        >>> print(db.check_spot(0))
-        9876DEF
-        >>> print(db.check_spot(1))
-        None
-        
+        >>> db.insert_vehicle("9878RTY", 789)
+        0
+        >>> print(db.check_spot(789))
+        9878RTY
+        >>> db.remove_vehicle("9878RTY")
+        0
         """
         self.db.seek(7 * spot_number)
         license_plate = self.db.read(7) 
@@ -184,9 +194,12 @@ class ParkingDatabase():
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> a = len(db.empty_spots())
         >>> db.insert_vehicle("3256AGH")
+        0
         >>> b = len(db.empty_spots())
         >>> print(a == b)
         False
+        >>> db.remove_vehicle("3256AGH")
+        0
         
         """
         free_spots = []
@@ -205,10 +218,13 @@ class ParkingDatabase():
         :param str license_plate: String to indicate car's plate
 
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
-        >>> db.insert_vehicle("1234ABC")
-        >>> place = db.find_vehicle("1234ABC")
+        >>> db.insert_vehicle("3712LOK")
+        0
+        >>> place = db.find_vehicle("3712LOK")
         >>> print(db.check_spot(place))
-        1234ABC
+        3712LOK
+        >>> db.remove_vehicle("3712LOK")
+        0
         """
         self.db.seek(0)
 
