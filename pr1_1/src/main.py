@@ -1,3 +1,11 @@
+"""
+==================
+
+This is the main module. It will interact with all of the other modules and with the user. 
+
+==================
+"""
+
 from os import path
 from sys import argv
 import input_manager
@@ -8,6 +16,11 @@ PROJECT_ABS_PATH = path.dirname(path.abspath(__file__))
 DB_FILE_PATH = f"{PROJECT_ABS_PATH}/spot_data.dat"
 
 def fill_parking_spot(db):
+    """
+    Used to fill a specific, if required, parking slot with a given license plate.
+
+    :param :class:`ParkingDatabase`: Indicates which database file is being written to
+    """
     spot = None
     if input_manager.yes_or_no("Do you want to manually select the parking spot?"):
         spot = input_manager.get_valid_spot(PARKING_SIZE)
@@ -28,6 +41,11 @@ def fill_parking_spot(db):
         print("Failed to occupy parking spot: Unknown error.")
 
 def leave_parking_spot(db):
+    """
+    Used to delete a car from a parking slot.
+
+    :param :class:`ParkingDatabase`: Indicates which database file is being written to
+    """
     license_plate = input_manager.get_licence_plate()
     
     result = db.remove_vehicle(license_plate)
@@ -40,6 +58,11 @@ def leave_parking_spot(db):
         print("Failed leave parking: Unknown error.")
 
 def check_parking_spot(db):
+    """
+    Check the parking slot for a specific license plate in database
+
+    :param :class:`ParkingDatabase`: Indicates which database file is being read from
+    """
     spot = input_manager.get_valid_spot(PARKING_SIZE)
 
     result = db.check_spot(spot)
@@ -50,6 +73,11 @@ def check_parking_spot(db):
         print(f"Found vehicle with license plate {result} is in this spot.")
 
 def list_empty_spots(db):
+    """
+    Returns a list indicating all the free spaces in the database
+
+    :param :class:`ParkingDatabase`: Indicates which database file is being read from
+    """
     spots = db.empty_spots()
 
     # To ensure user really wants a spamming input in their CLI
@@ -58,6 +86,11 @@ def list_empty_spots(db):
         print(f"Empty parking spots ({len(spots)}): {', '.join(spots_str)}.")
 
 def find_vehicle(db):
+    """
+    Find the parking slot for a specific license plate in the database
+
+    :param :class:`ParkingDatabase`: Indicates which database file is being read from
+    """
     license_plate = input_manager.get_licence_plate()
     
     result = db.find_vehicle(license_plate)
