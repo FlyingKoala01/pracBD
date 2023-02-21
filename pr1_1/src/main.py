@@ -100,12 +100,22 @@ def find_vehicle(db):
     else:
         print(f"Found vehicle at parking spot {result}.")
 
+def oldest_vehicles(db):
+    """
+    """
+    spots = db.oldest_vehicles()
+
+    # To ensure user really wants a spamming input in their CLI
+    if len(spots) < 30 or input_manager.yes_or_no(f"Display all {len(spots)} spots?"):
+        print(f"Oldest vehicles: ({len(spots)}): {', '.join(spots)}.")
+
 MENU_OPTIONS_TEXT = [
     "Occupy a parking spot",
     "Leave parking",
     "Check parking spot availability",
     "List empty parking spots",
     "Find vehicle in the parking",
+    "Show oldest vehicles",
     "Exit application"
 ]
 
@@ -114,7 +124,8 @@ MENU_OPTIONS_CALLBACKS = [
     leave_parking_spot,
     check_parking_spot,
     list_empty_spots,
-    find_vehicle
+    find_vehicle,
+    oldest_vehicles
 ]
 
 def print_menu():
