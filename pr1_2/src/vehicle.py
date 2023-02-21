@@ -1,4 +1,15 @@
+"""
+==================
 
+This module is used to represent a :class:`Vehicle` with its attributers.
+It is used to simplfy the process of handling the 3 characteristics composing a car 
+in the parking slot database.
+
+- The parent class :class:`Vehicle`. It is used to create and represent a data type to represent a vehicle 
+with 3 attributes, `license plate`, `color` and `brand`.
+
+==================
+"""
 
 from string import digits, ascii_uppercase
 
@@ -7,6 +18,16 @@ def valid_license_plate(license) -> bool:
     Checks if `license` follows the right format indicated by the documentation.
 
     :param str license: String indicating the license to be checked
+
+    >>> valid_license_plate("1234ABC")
+    True
+    >>> valid_license_plate("12ABCDEF")
+    False
+    >>> valid_license_plate("12345BC")
+    False
+    >>> valid_license_plate("1234abc")
+    False
+
     """
     if len(license) != 7: return False
 
@@ -19,7 +40,12 @@ def valid_license_plate(license) -> bool:
     return True
 
 class Vehicle:
+    """
+    This class initiates and validates a car. It is also used to fix a size for the registers used in the db.
+    It is also used to ease the encoding/decoding of bytes/strings when storing and retrieving data from the db.
 
+    """
+    
     BRAND_MAX_LENGTH = 10
     COLOR_MAX_LENGTH = 10
     LICENSE_PLATE_LENGTH = 7
