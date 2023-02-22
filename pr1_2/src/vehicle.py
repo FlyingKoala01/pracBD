@@ -1,4 +1,15 @@
+"""
+==================
 
+This module is used to represent a :class:`Vehicle` with its attributers.
+It is used to simplfy the process of handling the 3 characteristics composing a car 
+in the parking slot database.
+
+- The parent class :class:`Vehicle`. It is used to create and represent a data type to represent a vehicle 
+with 3 attributes, `license plate`, `color` and `brand`.
+
+==================
+"""
 
 from string import digits, ascii_uppercase
 
@@ -7,6 +18,16 @@ def valid_license_plate(license) -> bool:
     Checks if `license` follows the right format indicated by the documentation.
 
     :param str license: String indicating the license to be checked
+
+    >>> valid_license_plate("1234ABC")
+    True
+    >>> valid_license_plate("12ABCDEF")
+    False
+    >>> valid_license_plate("12345BC")
+    False
+    >>> valid_license_plate("1234abc")
+    False
+
     """
     if len(license) != 7: return False
 
@@ -19,6 +40,11 @@ def valid_license_plate(license) -> bool:
     return True
 
 class Vehicle:
+    """
+    This class initiates and validates a car. It is also used to fix a size for the registers used in the db.
+    It is also used to ease the encoding/decoding of bytes/strings when storing and retrieving data from the db.
+
+    """
 
     BRAND_MAX_LENGTH = 10
     COLOR_MAX_LENGTH = 10
@@ -27,6 +53,8 @@ class Vehicle:
     def __init__(self, license_plate, color, brand) -> None:
         """
         Attributes can be bytes or string
+
+        >>> car = Vehicle("1234ABC", "Red", "BMW")
         """
         self.license_plate = license_plate if type(license_plate) == str else license_plate.decode()
         self.color = color if type(color) == str else color.decode().strip('\x00')
@@ -35,7 +63,18 @@ class Vehicle:
     def validate(self) -> tuple:
         """
         Returns (bool, str) with (True, "Valid vehicle") or (False, "Reason").
+
+        >>> (Vehicle("1234ABC", "Red", "BMW")).validate()
+        (True, 'Valid vehicle')
+        >>> (Vehicle("123AABC", "Red", "BMW")).validate()
+        (False, 'Invalid license plate: use format 0000AAA')
+        >>> (Vehicle("1234ABC", "Reeeeeeeeeeed", "BMW")).validate()
+        (False, 'Car color should not exceed 10 characters.')
+        >>> (Vehicle("1234ABC", "Red", "BMWWWWWWWWWWWW")).validate()
+        (False, 'Car brand should not exceed 10 characters.')
+
         """
+
         if not valid_license_plate(self.license_plate):
             return (False, "Invalid license plate: use format 0000AAA")
         if len(self.color) > 10:
@@ -45,6 +84,12 @@ class Vehicle:
         return (True, "Valid vehicle")
     
     def __repr__(self) -> str:
+        """
+        
+        >>> car = Vehicle("1234ABC", "Red", "BMW")
+        >>> print(car)
+        Vehicle <License plate: 1234ABC, Brand: BMW, Color: Red>
+        """
         return f"Vehicle <License plate: {self.license_plate}, Brand: {self.brand}, Color: {self.color}>"
     
     def __str__(self) -> str:
