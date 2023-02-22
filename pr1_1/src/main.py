@@ -1,7 +1,11 @@
 """
 ==================
 
-This is the main module. It will interact with all of the other modules and with the user. 
+This is the main module. It will interact with all of the other modules and
+with the user. 
+
+The functions are just an analogy of the options in the menu. This means
+that executing any function is like clicking on that menu option.
 
 ==================
 """
@@ -17,9 +21,16 @@ DB_FILE_PATH = f"{PROJECT_ABS_PATH}/spot_data.dat"
 
 def fill_parking_spot(db):
     """
-    Used to fill a specific, if required, parking slot with a given license plate.
+    Used to fill a specific, if required, parking slot with a given
+    license plate.
 
-    :param `ParkingDatabase`: Indicates which database file is being written to
+    The spot can be introduced or the user can choose to park on the first
+    available spot.
+
+    This function gets the user's input, and returns a nice output depending
+    on the output (or error) code.
+
+    :param `ParkingDatabase`: The opened database instance.
     """
     spot = None
     if input_manager.yes_or_no("Do you want to manually select the parking spot?"):
@@ -42,9 +53,11 @@ def fill_parking_spot(db):
 
 def leave_parking_spot(db):
     """
-    Used to delete a car from a parking slot.
+    Used to delete a car from a parking slot given a license plate. This
+    function handles user's input and outputs a nice message depending on the
+    database's return code.
 
-    :param `ParkingDatabase`: Indicates which database file is being written to
+    :param `ParkingDatabase`: The opened database instance.
     """
     license_plate = input_manager.get_licence_plate()
     
@@ -59,9 +72,12 @@ def leave_parking_spot(db):
 
 def check_parking_spot(db):
     """
-    Check the parking slot for a specific license plate in database
+    Check the parking slot for a specific license plate in database.
 
-    :param `ParkingDatabase`: Indicates which database file is being read from
+    The function gets user's input and outputs a different message wether
+    the spot is empty or occupied.
+
+    :param `ParkingDatabase`: The opened database instance.
     """
     spot = input_manager.get_valid_spot(PARKING_SIZE)
 
@@ -74,9 +90,12 @@ def check_parking_spot(db):
 
 def list_empty_spots(db):
     """
-    Returns a list indicating all the free spaces in the database
+    Returns a list indicating all the free spaces in the database.
 
-    :param `ParkingDatabase`: Indicates which database file is being read from
+    If the length of the list exceeds 30 elements, an extra prompt is required
+    in order to ensure a spamming output.
+
+    :param `ParkingDatabase`: The opened database instance.
     """
     spots = db.empty_spots()
 
@@ -87,9 +106,11 @@ def list_empty_spots(db):
 
 def find_vehicle(db):
     """
-    Find the parking slot for a specific license plate in the database
+    Find the parking slot for a specific license plate in the database.
 
-    :param `ParkingDatabase`: Indicates which database file is being read from
+    There are different output messages wether the vehicle is found or not.
+
+    :param `ParkingDatabase`: The opened database instance.
     """
     license_plate = input_manager.get_licence_plate()
     
@@ -102,6 +123,12 @@ def find_vehicle(db):
 
 def oldest_vehicles(db):
     """
+    Returns a list with the license plates sorted by date (oldest first).
+
+    If the length of the list exceeds 30 elements, an extra prompt is required
+    in order to ensure a spamming output.
+
+    :param `ParkingDatabase`: The opened database instance.
     """
     spots = db.oldest_vehicles()
 
@@ -129,6 +156,28 @@ MENU_OPTIONS_CALLBACKS = [
 ]
 
 def print_menu():
+    """
+    Prints the user menu. In order to make this program easy-to-scale,
+    the options are defined in a list in this module.
+
+    This is the only function of this module that doesn't gather user input,
+    so we can introduce a doctest.
+
+    >>> print_menu()
+    ====================
+    PARKING MANAGER MENU
+    ====================
+    <BLANKLINE>
+    Options:
+     1: Occupy a parking spot
+     2: Leave parking
+     3: Check parking spot availability
+     4: List empty parking spots
+     5: Find vehicle in the parking
+     6: Show oldest vehicles
+     7: Exit application
+    <BLANKLINE>
+    """
     print("="*20)
     print("PARKING MANAGER MENU")
     print("="*20 + "\n")

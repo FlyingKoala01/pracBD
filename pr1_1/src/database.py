@@ -1,11 +1,10 @@
 """
 ==================
 
-The module will be used to interact with the `spot_data.dat` file. It contains the following classes:
+The module will be used to interact with the `spot_data.dat` file.
 
-- The parent class :class:`ParkingDatabase`. It is used to interact with the db.
-
-- The exception :class:`DatabaseCorruptionError`, that is raised when the db file is corrupted.
+In contains the `class.DatabaseCorruptionError` Exception, the class to
+manage database connections and an auxiliary function to sort license plates.
 
 ==================
 """
@@ -15,30 +14,44 @@ from input_manager import valid_license_plate
 
 class DatabaseCorruptionError(Exception):
     """
-    This Exception is systematically raised everytime the instruction BRK is being executed.
-    It is used to break the simulation in :func:`BREAK.execute`.
+    This Exception is raised when there's an error while reading the database
+    file at startup.
 
     >>> raise DatabaseCorruptionError('test')
     Traceback (most recent call last):
      ...
     database.DatabaseCorruptionError: test
     """
-
     pass
 
 class ParkingDatabase():
     """
-    This class represents a DataBase storing information about a garage.
+    This class represents a Database storing information about a garage.
     Specifically, it will store license plates.
-    
+
+    :param str db_file: The database file name
+    :param int parking_size: How many cars will fit in the parking
+    :param bool init_if_not_exist: Create a database file if not found.
+
+    >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+    >>> db.insert_vehicle("7865FTH", 565)
+    0
+    >>> db.check_spot(565)
+    '7865FTH'
+    >>> db.remove_vehicle("7865FTH")
+    0
+    >>> db.check_spot(1)
+    >>> db.remove_vehicle("7865FTH")
+    1
     """
 
     def __init__(self, db_file, parking_size, init_if_not_exist=False):
         """
-        Initialize the `db_file` with `parking_size` car-spaces.
+        Initialize the instance.
 
-        :param str db_file: String indicating the database file name
-        :param int parking_size: Integer indicating how many cars will fit in the parking
+        :param str db_file: The database file name
+        :param int parking_size: How many cars will fit in the parking
+        :param bool init_if_not_exist: Create a database file if not found.
         
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         """
@@ -49,7 +62,8 @@ class ParkingDatabase():
 
     def end(self):
         """
-        Closes the database file. Used when user exists the menu.
+        Closes the database file, to prevent corruption. It must be done
+        before the program finishes. Once done, the database isn't accessible.
 
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> db.end()
@@ -57,18 +71,20 @@ class ParkingDatabase():
         Traceback (most recent call last):
          ...
         ValueError: I/O operation on closed file.
-
         """
 
         self.db.close()
 
     def __open_db_file(self, file, init_if_not_exist):
         """
-        Creates or opens the `file`. In case the file does not exist, it is created and thus also the db is initialized.
+        Creates or opens the `file`. In case the file does not exist,
+        it is created and thus also the db is initialized.
 
-        :param str file: String indicating the file name
-        :param bool init_if_not_exist: Boolean value indicating if the `file` exists or not
+        :param str file: The file name
+        :param bool init_if_not_exist: If the `file` exists or not
 
+        :return: The file instance of the db file.
+        :rtype: file
         """
 
         if not init_if_not_exist or path.exists(file):
@@ -80,10 +96,9 @@ class ParkingDatabase():
 
     def __init_db_file(self, file):
         """
-        Initializes the database in `file`. Fills the car spaces with "XXXXXXX".
+        Initializes the database in `file`. Fills the spaces with "XXXXXXX".
 
         :param str file: String indicating the file name
-
         """
 
         # We suppose that the file has been just opened and was empty.
@@ -91,8 +106,11 @@ class ParkingDatabase():
 
     def _is_db_valid(self):
         """
-        Checks all the license plates in the db. If any plate is not well formatted, it returns `False`.
+        Checks all the license plates in the db.
+        If any plate is not well formatted, it returns `False`.
 
+        :return: Wether the db is well formatted.
+        :rtype: bool
         """
 
         self.db.seek(0)
@@ -107,8 +125,10 @@ class ParkingDatabase():
 
     def _first_empty_spot(self):
         """
-        Function to find the first empty spot in the db indicated by "XXXXXXX". Returns the spot number if one is found.
+        Function to find the first empty spot in the db indicated by "XXXXXXX".
 
+        :return: The number of the first empty spot or None if parking full.
+        :rtype: int
         """
 
         self.db.seek(0)
@@ -124,8 +144,17 @@ class ParkingDatabase():
         Checks if for a given `license_plate` there is a spot for the car to park. If `spot` is specified, it will 
         look specifically for that spot, otherwise, it will park in the first free space.
 
-        :param str license_plate: String to indicate car's plate
-        :param int spot: Indicating a specific parking space
+        Output codes:
+        - 0: Success.
+        - 1: Specific spot full.
+        - 2: Parking full.
+        - 3: License plate already in parking.
+
+        :param str license_plate: String to indicate car's plate.
+        :param int spot: Indicating a specific parking space.
+
+        :return: The output code specifying the results stated above.
+        :rtype: int
 
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> db.insert_vehicle("9876DEF")
@@ -135,7 +164,6 @@ class ParkingDatabase():
         9876DEF
         >>> db.remove_vehicle("9876DEF")
         0
-
         """
 
         if spot == None:
@@ -160,20 +188,25 @@ class ParkingDatabase():
         """
         Function used to remove a specific car with `license_plate`.
 
-        :param str license_plate: String to indicate car's plate
+        Output codes:
+        - 0: Success.
+        - 1: Car not found in parking.
+
+        :param str license_plate: String to indicate car's plate.
+
+        :return: The output code specified above.
+        :rtype: int
 
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> db.insert_vehicle("7865FTH", 565)
         0
-        >>> print(db.check_spot(565))
-        7865FTH
+        >>> db.check_spot(565)
+        '7865FTH'
         >>> db.remove_vehicle("7865FTH")
         0
-        >>> print(db.check_spot(1))
-        None
+        >>> db.check_spot(1)
         >>> db.remove_vehicle("7865FTH")
         1
-
         """
 
         spot =  self.find_vehicle(license_plate)
@@ -189,15 +222,17 @@ class ParkingDatabase():
         Used to check if for a specific spot `spot_number`, there is a car parked or not
 
         :param int spot_number: Indicating a specific parking space 
+
+        :return: The license_plate or None if cars aren't found.
+        :rtype: str
         
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> db.insert_vehicle("9878RTY", 789)
         0
-        >>> print(db.check_spot(789))
-        9878RTY
+        >>> db.check_spot(789)
+        '9878RTY'
         >>> db.remove_vehicle("9878RTY")
         0
-
         """
 
         self.db.seek(7 * spot_number)
@@ -209,16 +244,18 @@ class ParkingDatabase():
         """
         Returns a list of the empty spots in the db.
 
+        :return: The list of empty spots.
+        :rtype: list
+
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> a = len(db.empty_spots())
         >>> db.insert_vehicle("3256AGH")
         0
         >>> b = len(db.empty_spots())
-        >>> print(a == b)
-        False
+        >>> a == b+1
+        True
         >>> db.remove_vehicle("3256AGH")
         0
-        
         """
 
         free_spots = []
@@ -232,8 +269,20 @@ class ParkingDatabase():
     
     def full_spots(self):
         """
-        Returns a list of the full spots in the db.
-        
+        Returns a list of the empty spots in the db.
+
+        :return: The list of empty spots.
+        :rtype: list
+
+        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> a = len(db.full_spots())
+        >>> db.insert_vehicle("3256AGH")
+        0
+        >>> b = len(db.full_spots())
+        >>> a+1 == b
+        True
+        >>> db.remove_vehicle("3256AGH")
+        0
         """
 
         free_spots = []
@@ -252,6 +301,9 @@ class ParkingDatabase():
 
         :param str license_plate: String to indicate car's plate
 
+        :return: The vehicle parking spot.
+        :rtype: int
+
         >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
         >>> db.insert_vehicle("3712LOK")
         0
@@ -260,9 +312,7 @@ class ParkingDatabase():
         3712LOK
         >>> db.remove_vehicle("3712LOK")
         0
-
         """
-        
         self.db.seek(0)
 
         for i in range(self.parking_size):
@@ -276,13 +326,23 @@ class ParkingDatabase():
         license_plates.sort(key = license_plate_to_alphanumeric)
         return license_plates
 
-def license_plate_to_alphanumeric(license_plate) -> int:
+def license_plate_to_alphanumeric(license_plate):
     """
     Returns an integer representing the license plate. The number isn't very
     important, what matters is that an older license_plate will always have
     a smaller number.
 
-    license_plate MUST be a valid license plate
+    :param str license_plate: MUST be a valid license plate
+
+    :return: A number representing the age of the license plate. The smaller, the younger.
+    :rtype: int
+
+    >>> a = license_plate_to_alphanumeric('1234GGH')
+    >>> b = license_plate_to_alphanumeric('1235GGH')
+    >>> c = license_plate_to_alphanumeric('1235GGG')
+    >>> d = license_plate_to_alphanumeric('1235MGH')
+    >>> c < a and a < b and b < d
+    True
     """
     fixed_license_plate = license_plate[4:] + license_plate[:4]
     return int.from_bytes(fixed_license_plate.encode(), 'big')

@@ -37,7 +37,7 @@ pygments_style = 'sphinx'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'alabaster'
-html_static_path = ['_static']
+html_static_path = []
 html_sidebars = {
     '**': [
         'relations.html',  # needs 'show_related': True theme option to display
