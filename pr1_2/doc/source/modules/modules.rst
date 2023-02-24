@@ -12,5 +12,7 @@ works from inside.
     :caption: Modules:
 
     module_database
+    module_vehicle
+    module_parking_spot
     module_input_manager
     module_main
