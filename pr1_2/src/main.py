@@ -146,7 +146,7 @@ def find_vehicle_color(db):
     :param `database.ParkingDatabase` db: The opened database instance.
     """
     color = input_manager.get_attribute("color")
-    spots = db.find_vehicles_with_brand(color)
+    spots = db.find_vehicles_with_color(color)
 
     print()
 

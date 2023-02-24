@@ -76,7 +76,7 @@ def get_licence_plate():
     :rtype: str
     """
     while True:
-        candidate = input("Enter a license plate (with format `0000AAA`): ")
+        candidate = input("Enter a license plate (with numbers and uppercase, no spaces): ")
 
         if valid_license_plate(candidate): return candidate
 
@@ -96,7 +96,7 @@ def get_attribute(attribute_name):
     while True:
         candidate = input(f"Enter vehicle's {attribute_name} (max. 10 chars): ")
 
-        if len(candidate) > 10: return candidate
+        if len(candidate) <= 10: return candidate
 
         print(f"Vehicle's {attribute_name} too long!")
 

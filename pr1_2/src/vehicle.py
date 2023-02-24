@@ -15,12 +15,10 @@ def valid_license_plate(license) -> bool:
     """
     Checks if `license` follows the right format indicated by the documentation.
 
-    The format needed is new's Spanish License Plate formatting:
-    - 4 digits
-    - 3 letters in uppercase
+    The format needed is very simple and works in most EU countries:
 
-    Ideally we would discard vowels and some other letters but we thought that
-    this wouldn't make a difference in our testing case.
+    - Between 5 and 10 characters.
+    - All characters must be digits or ascii uppercase.
 
     :param str license: String indicating the license to be checked
 
@@ -29,20 +27,17 @@ def valid_license_plate(license) -> bool:
 
     >>> valid_license_plate("1234ABC")
     True
-    >>> valid_license_plate("12ABCDEF")
+    >>> valid_license_plate("12ABCDEFGHIJ")
     False
-    >>> valid_license_plate("12345BC")
+    >>> valid_license_plate("1234 5BC")
     False
     >>> valid_license_plate("1234abc")
     False
     """
-    if len(license) != 7: return False
+    if len(license) < 5 or len(license) > 10: return False
 
-    for i in range(0, 4):
-        if license[i] not in digits: return False
-    
-    for i in range(4, 7):
-        if license[i] not in ascii_uppercase: return False
+    for c in license:
+        if c not in digits + ascii_uppercase: return False
 
     return True
 
@@ -69,7 +64,7 @@ class Vehicle:
 
     BRAND_MAX_LENGTH = 10
     COLOR_MAX_LENGTH = 10
-    LICENSE_PLATE_LENGTH = 7
+    LICENSE_PLATE_LENGTH = 10
 
     def __init__(self, license_plate, color, brand) -> None:
         """
@@ -83,7 +78,7 @@ class Vehicle:
         >>> car
         Vehicle <License plate: 1234ABC, Brand: BMW, Color: Red>
         """
-        self.license_plate = license_plate if type(license_plate) == str else license_plate.decode()
+        self.license_plate = license_plate if type(license_plate) == str else license_plate.decode().strip('\x00')
         self.color = color if type(color) == str else color.decode().strip('\x00')
         self.brand = brand if type(brand) == str else brand.decode().strip('\x00')
 
@@ -97,8 +92,8 @@ class Vehicle:
 
         >>> (Vehicle("1234ABC", "Red", "BMW")).validate()
         (True, 'Valid vehicle')
-        >>> (Vehicle("123AABC", "Red", "BMW")).validate()
-        (False, 'Invalid license plate: use format 0000AAA')
+        >>> (Vehicle("123 ABC", "Red", "BMW")).validate()
+        (False, 'Invalid license plate: use digits and uppercase, without spaces')
         >>> (Vehicle("1234ABC", "Reeeeeeeeeeed", "BMW")).validate()
         (False, 'Car color should not exceed 10 characters.')
         >>> (Vehicle("1234ABC", "Red", "BMWWWWWWWWWWWW")).validate()
@@ -106,7 +101,7 @@ class Vehicle:
         """
 
         if not valid_license_plate(self.license_plate):
-            return (False, "Invalid license plate: use format 0000AAA")
+            return (False, 'Invalid license plate: use digits and uppercase, without spaces')
         if len(self.color) > 10:
             return (False, "Car color should not exceed 10 characters.")
         if len(self.brand) > 10:

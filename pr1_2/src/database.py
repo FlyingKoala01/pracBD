@@ -11,7 +11,7 @@ manage database connections and an auxiliary function to sort license plates.
 When running doctests, we wish to start with an empty parking place. That's
 why we delete the db file in this doctest.
 
->>> _delete_db_if_exists("./spot_data.dat")
+>>> _delete_db_if_exists("./spot_data.test.dat")
 """
 
 from os import path, remove
@@ -21,7 +21,7 @@ from parking_spot import ParkingSpot
 
 DB_RECORD_LENGTH = Vehicle.COLOR_MAX_LENGTH + Vehicle.BRAND_MAX_LENGTH + Vehicle.LICENSE_PLATE_LENGTH
 STRUCT_FORMAT = f"{Vehicle.LICENSE_PLATE_LENGTH}s{Vehicle.COLOR_MAX_LENGTH}s{Vehicle.BRAND_MAX_LENGTH}s"
-PLACEHOLDER_LICENSE_PLATE = "XXXXXXX"
+PLACEHOLDER_LICENSE_PLATE = "XXXXXXXXXX"
 PLACEHOLDER_VEHICLE = Vehicle(PLACEHOLDER_LICENSE_PLATE, "", "")
 
 def _delete_db_if_exists(filename):
@@ -51,7 +51,7 @@ class ParkingDatabase():
     :param int parking_size: How many cars will fit in the parking
     :param bool init_if_not_exist: Create a database file if not found.
 
-    >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+    >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
     >>> car = Vehicle('7865GZH', 'pink', 'BMW')
     >>> db.insert_vehicle(car, 987)
     0
@@ -72,7 +72,7 @@ class ParkingDatabase():
         :param int parking_size: How many cars will fit in the parking
         :param bool init_if_not_exist: Create a database file if not found.
         
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         """
         self.parking_size = parking_size
         self.db = self.__open_db_file(db_file, init_if_not_exist)
@@ -83,7 +83,7 @@ class ParkingDatabase():
         Closes the database file, to prevent corruption. It must be done
         before the program finishes. Once done, the database isn't accessible.
 
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> db.end()
         >>> car = Vehicle('7865GZH', 'pink', 'BMW')
         >>> db.insert_vehicle(car)
@@ -204,7 +204,7 @@ class ParkingDatabase():
         :return: The output code specifying the results stated above.
         :rtype: int
 
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> car = Vehicle('7865GTH', 'pink', 'BMW')
         >>> db.insert_vehicle(car, 565)
         0
@@ -247,7 +247,7 @@ class ParkingDatabase():
         :return: The output code specified above.
         :rtype: int
 
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> car = Vehicle('7865FTH', 'pink', 'BMW')
         >>> db.insert_vehicle(car, 566)
         0
@@ -275,7 +275,7 @@ class ParkingDatabase():
         :return: The vehicle or None if cars aren't found.
         :rtype: vehicle.Vehicle
         
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> car = Vehicle('9878RTY', 'pink', 'BMW')
         >>> db.insert_vehicle(car, 789)
         0
@@ -296,7 +296,7 @@ class ParkingDatabase():
         :return: The list of empty spots.
         :rtype: list
 
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> a = len(db.empty_spots())
         >>> car = Vehicle('1264ABC', 'pink', 'BMW')
         >>> db.insert_vehicle(car)
@@ -324,7 +324,7 @@ class ParkingDatabase():
         :return: The vehicle parking spot.
         :rtype: parking_spot.ParkingSpot
 
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> car = Vehicle('1294ABC', 'pink', 'BMW')
         >>> db.insert_vehicle(car)
         0
@@ -348,7 +348,7 @@ class ParkingDatabase():
         :return: The list of :class:`parking_spot.ParkingSpot`.
         :rtype: list
 
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> car = Vehicle('1214ABC', 'pink', 'BMW')
         >>> list1 = db.find_vehicles_with_color('pink')
         >>> db.insert_vehicle(car)
@@ -378,7 +378,7 @@ class ParkingDatabase():
         :return: The list of :class:`parking_spot.ParkingSpot`.
         :rtype: list
 
-        >>> db = ParkingDatabase("./spot_data.dat", 1000, True)
+        >>> db = ParkingDatabase("./spot_data.test.dat", 1000, True)
         >>> car = Vehicle('1204ABC', 'pink', 'BMW')
         >>> list1 = db.find_vehicles_with_brand('BMW')
         >>> db.insert_vehicle(car)

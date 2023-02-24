@@ -29,9 +29,6 @@ The application is very robust and checks for all user inputs and database
 corruption at the start of the program. It doesn't enable duplicated license
 plates.
 
-There is a single limitation in this application: **license plates must have
-the "new" spanish format**. This is to ensure that they can be sorted by age.
-
 **EXTRA:** This second part is fully object-oriented. Check the modules
 to see how clean the code looks!
 
