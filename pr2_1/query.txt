@@ -1,0 +1,69 @@
+2.2
+===============================================================================================
+1) SELECT email, nom, cognom, poblacio, dataNaixement FROM usuaris WHERE poblacio=="Manresa";
+
+2) SELECT email FROM usuaris WHERE cognom == "Albets";
+
+3) SELECT nom, cognom FROM usuari WHERE email IN (
+	SELECT email2 FROM amistats WHERE estat = "Acceptada" AND email1 IN (
+		SELECT email FROM usuari WHERE nom = "Pere" AND cognom = "Garcia"));
+
+4) 3) EXCEPT (SELECT nom, cognom FROM usuaris WHERE email IN (
+	SELECT email2 FROM amistats WHERE estat = "Acceptada" AND email1 IN (
+		SELECT email FROM usuaris WHERE nom = "Jordi" AND cognom = "Alba")));
+
+5) SELECT COUNT (*) FROM amistats WHERE estat = "Rebutjada";
+
+6) Query de totes les amistats => intersect query per a cada email de les amistats que viuen a Manresa (com agafo els dos 
+
+7) SELECT COUNT (estat) FROM amistats WHERE estat = "Rebutjada" AND email1 IN (
+	SELECT email FROM usuari);
+
+8) 
+
+2.3
+================================================================================================
+
+1) SELECT id-empleat, ciutat FROM empleat WHERE id-empleat IN (
+	SELECT id-empleat FROM feina WHERE id-empresa = "Bank Newton");
+
+2) SELECT * FROM empleat WHERE id-empleat IN (
+	SELECT id-empleat FROM feina WHERE id-empresa = "Bank Newton" AND salari > 10000);
+
+3) SELECT id-empleat FROM empleat WHERE id-empleat IN (
+	SELECT id-empleat FROM feina WHERE id-empresa != "Bank Newton");
+
+4) SELECT id-empleat FROM empleat WHERE id-empleat IN (
+	SELECT id-empleat FROM feina WHERE salari > (
+		SELECT MAX(salari) FROM feina WHERE id-empresa = "Bank Newton"
+		)
+	);
+
+5) SELECT id-empresa, COUNT(id-empresa) FROM feina GROUP BY id-empresa ORDER BY COUNT(id-empresa) DESC;
+
+6) UPDATE empleat SET ciutat="Barcelona" WHERE id-empleat=22;
+
+8)
+
+2.4
+===========================
+
+1. SELECT result_time, nodeid FROM sensors WHERE light > 550;
+```
+result_time          nodeid
+-------------------  ------
+2015-03-05 09:10:18  1
+2015-03-05 10:20:10  1
+2015-03-05 10:30:11  1
+2015-03-05 11:33:15  1
+2015-03-05 11:40:23  1
+2015-03-05 12:42:28  1
+2023-03-12 17:07:29  1
+```
+
+2. SELECT AVG(light) FROM sensors WHERE nodeid=1 AND result_time BETWEEN '2015-03-05 18:00:00' and '2015-03-05 21:00:00';
+```
+Modify bd to prove this query
+```
+
+3. 
