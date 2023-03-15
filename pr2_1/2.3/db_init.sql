@@ -1,55 +1,139 @@
 PRAGMA foreign_keys=ON;
 
 CREATE TABLE empleat (
-    id-empleat NUMERIC PRIMARY KEY,
-    carrer   TEXT NOT NULL,
-    ciutat   VARCHAR(20)
+    id_empleat INT PRIMARY KEY,
+    carrer TEXT,
+    ciutat TEXT NOT NULL
     );
 
 CREATE TABLE feina (
-    id-empleat NUMERIC PRIMARY KEY,
-    id-empresa NUMERIC,
-    salari NUMERIC,
-    FOREIGN KEY (id-empleat) REFERENCES empleat,
-    FOREIGN KEY (id-empresa) REFERENCES empresa
+    id_empleat INT PRIMARY KEY,
+    id_empresa INT NOT NULL,
+    salari FLOAT NOT NULL,
+    FOREIGN KEY (id_empleat) REFERENCES empleat,
+    FOREIGN KEY (id_empresa) REFERENCES empresa
     );
 
 CREATE TABLE empresa (
-    id-empresa NUMERIC PRIMARY KEY,
-    ciutat VARCHAR(20)
+    id_empresa INT PRIMARY KEY,
+    ciutat TEXT NOT NULL
     );
 
 CREATE TABLE manager (
-    id-empleat NUMERIC PRIMARY KEY,
-    id-empleat-empresa NUMERIC,
-    FOREIGN KEY (id-empleat) REFERENCES empleat
+    id_empleat INT PRIMARY KEY,
+    id_empleat_coordinador INT NOT NULL,
+    FOREIGN KEY (id_empleat) REFERENCES empleat,
+    FOREIGN KEY (id_empleat_coordinador) REFERENCES empleat
     );
 
 -- Filling the db
+INSERT INTO empleat (id_empleat, carrer, ciutat) VALUES
+(1, 'Carrer de la Lluna', 'Barcelona'),
+(2, 'Carrer de la Sol', 'Barcelona'),
+(3, 'Carrer del Riu', 'Madrid'),
+(4, 'Carrer del Bosc', 'Madrid'),
+(5, 'Carrer del Mar', 'València'),
+(6, 'Carrer del Cel', 'València');
 
-INSERT INTO empleat values (1, 'x1', 'BCN');
-INSERT INTO empleat values (2, 'x2', 'BCN');
-INSERT INTO empleat values (3, 'x2', 'BCN');
-INSERT INTO empleat values (4, 'x3', 'MANRESA');
-INSERT INTO empleat values (5, 'x3', 'TERRASA');
-INSERT INTO empleat values (6, 'x2', 'SURIA');
-INSERT INTO empleat values (7, 'x4', 'LLEIDA');
-INSERT INTO empleat values (8, 'x5', 'MANRESA');
-INSERT INTO empleat values (9, 'x8', 'BCN');
+INSERT INTO empresa (id_empresa, ciutat) VALUES
+(1, 'Barcelona'),
+(2, 'Madrid'),
+(3, 'València');
 
-INSERT INTO feina values (1, 1, 'BCN');
-INSERT INTO feina values (2, 1, 'BCN');
-INSERT INTO feina values (3, 1, 'BCN');
-INSERT INTO feina values (4, 35, 'MANRESA');
-INSERT INTO feina values (5, 1, 'TERRASA');
-INSERT INTO feina values (6, 35, 'SURIA');
-INSERT INTO feina values (7, 21, 'LLEIDA');
-INSERT INTO feina values (8, 1, 'MANRESA');
-INSERT INTO feina values (9, 35, 'BCN');
+INSERT INTO feina (id_empleat, id_empresa, salari) VALUES
+(1, 1, 2000.00),
+(2, 1, 2200.00),
+(3, 2, 1800.00),
+(4, 2, 1900.00),
+(5, 3, 1700.00),
+(6, 3, 1850.00);
 
-INSERT INTO empresa values (1, 'BCN');
-INSERT INTO empresa values (35, 'MANRESA');
-INSERT INTO empresa values (21, 'LLEIDA');
+INSERT INTO manager (id_empleat, id_empleat_coordinador) VALUES
+(1, 2),
+(3, 4),
+(5, 6);
 
-
+-- Exercici 1 (empresa no té camp de nom, pel que suposarem que bank newton es id 2)
+SELECT id_empleat, ciutat
+FROM empleat
+WHERE id_empleat IN (
+    SELECT id_empleat
+    FROM feina
+    WHERE id_empresa = 2
+);
+-- Exercici 2
+SELECT *
+FROM empleat
+WHERE id_empleat IN (
+    SELECT id_empleat
+    FROM feina
+    WHERE id_empresa = 2 AND salari > 2000
+);
+-- Exercici 3
+SELECT id_empleat
+FROM empleat
+WHERE id_empleat NOT IN (
+    SELECT id_empleat
+    FROM feina
+    WHERE id_empresa = 2
+);
+-- Exercici 4
+SELECT *
+FROM empleat
+WHERE id_empleat IN (
+    SELECT id_empleat
+    FROM feina
+    WHERE salari > (
+        SELECT MAX(salari)
+        FROM feina
+        WHERE id_empresa = 2
+    )
+);
+-- Exercici 5
+SELECT id_empresa, COUNT(id_empleat) AS total_empleats
+FROM feina
+GROUP BY id_empresa
+ORDER BY total_empleats DESC
+LIMIT 1;
+-- Exercici 6
+UPDATE empleat
+SET ciutat = 'Manresa'
+WHERE id_empleat = 2;
+-- Exercici 7
+UPDATE feina
+SET salari = salari * 1.1
+WHERE id_empleat IN (
+    SELECT id_empleat_coordinador
+    FROM manager
+);
+-- Exercici 8
+SELECT id_empleat
+FROM empleat
+WHERE ciutat = (
+    SELECT ciutat
+    FROM empresa
+    WHERE id_empresa = (
+        SELECT id_empresa
+        FROM (
+            SELECT id_empleat, id_empresa
+            FROM feina
+        ) AS feina_empleat
+        WHERE feina_empleat.id_empleat = empleat.id_empleat
+    )
+);
+-- Exercici 9
+SELECT id_empleat
+FROM empleat
+WHERE ciutat = (
+    SELECT ciutat
+    FROM empleat
+    WHERE id_empleat IN (
+        SELECT id_empleat_coordinador
+        FROM manager
+        WHERE id_empleat = empleat.id_empleat
+    )
+    LIMIT 1);
+-- Exercici 10
+DELETE FROM feina
+WHERE id_empresa = 2;
 

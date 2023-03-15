@@ -44,3 +44,113 @@ CREATE TABLE calib_temp as select temp, avg(temp)+temp as calib from sensors gro
 CREATE TABLE calib_light as select light, avg(light)+light as calib from sensors group by light;
 
 
+-- Exercise 1
+SELECT result_time, (SELECT calib from calib_light WHERE light = sensors.light) as calib_light
+FROM sensors
+WHERE (SELECT calib from calib_light WHERE light = sensors.light) > 500;
+-- Result
+-- 639|1110.0
+-- 653|1112.0
+-- 683|1114.0
+-- 712|1116.0
+-- 715|1120.0
+-- ...
+
+-- Exercise 2
+SELECT avg((SELECT calib from calib_light WHERE light = sensors.light)) as calib_light
+FROM sensors
+WHERE nodeid = 1 AND strftime('%H:%M:%S', result_time) BETWEEN '18:00:00' AND '21:00:00';
+-- Result
+-- [Nothing]
+-- This is because I started the database before 6PM and the only hardcoded results are on the morning.
+
+-- Exercise 3
+SELECT avg((SELECT calib from calib_light WHERE light = sensors.light)) as calib_light,
+       avg((SELECT calib from calib_temp WHERE temp = sensors.temp)) as calib_temp
+FROM sensors
+WHERE voltage <= 418 AND strftime('%H:%M:%S', result_time) BETWEEN '18:00:00' AND '21:00:00';
+-- Result
+-- [Again, nothing]
+-- Without the last where statement we would get
+-- 1119.75|22.625
+
+-- Exercise 4
+SELECT strftime('%H', result_time) as hour, AVG((SELECT calib FROM calib_temp WHERE temp = sensors.temp)) as calib_temp
+FROM sensors
+WHERE nodeid = 2 AND strftime('%H:%M:%S', result_time) BETWEEN '18:00:00' AND '21:00:00'
+GROUP BY hour;
+-- Result (without the last where)
+-- 09|0.0
+-- 10|15.0
+-- 11|23.0
+-- 12|26.0
+-- 15|30.0
+
+-- Exercise 5
+SELECT epoch
+FROM sensors
+WHERE nodeid IN (1,2)
+GROUP BY epoch
+HAVING COUNT(DISTINCT result_time) != 1;
+-- Result
+-- [nothing]
+-- Note that the data above is `correct`, so we don't get anything.
+-- We've tried to change the data and saw results.
+
+-- Exercise 6
+SELECT epoch
+FROM sensors
+GROUP BY epoch
+HAVING COUNT(*) < 3
+ORDER BY epoch DESC;
+-- Result (didn't need to use nested queries for this one)
+-- 734
+-- 732
+
+-- Exercise 7
+SELECT epoch, (SELECT temp FROM sensors WHERE nodeid=1 AND epoch<=s.epoch ORDER BY epoch DESC LIMIT 1) as s1,
+              (SELECT temp FROM sensors WHERE nodeid=2 AND epoch<=s.epoch ORDER BY epoch DESC LIMIT 1) as s2,
+              (SELECT temp FROM sensors WHERE nodeid=3 AND epoch<=s.epoch ORDER BY epoch DESC LIMIT 1) as s3
+FROM sensors s
+GROUP BY epoch;
+-- Result
+-- 639|26|0|-2
+-- 653|12|5|0
+-- 683|38|10|2
+-- 712|15|11|4
+-- 715|0|12|10
+-- 725|27|13|12
+-- 727|20|14|13
+-- 729|12|15|14
+-- 732|13|15|14
+-- 734|13|16|14
+
+
+-- Exercise 8
+-- The only way we managed to make a range.
+-- We are not very confidents about this query :D
+WITH RECURSIVE numbers AS (
+  SELECT 639 AS num
+  UNION ALL
+  SELECT num + 1
+  FROM numbers
+  WHERE num < 735
+)
+SELECT num
+FROM numbers
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM sensors
+  WHERE epoch = num
+);
+-- Result
+-- 640
+-- 641
+-- 642
+-- 643
+-- 644
+-- 645
+-- 646
+-- 647
+-- 648
+-- ...
