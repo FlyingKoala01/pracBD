@@ -1,3 +1,9 @@
+"""
+==================
+This module is used to create to handle the DB. Its creation and import/export of its contents into a CSV file
+==================
+"""
+
 import sqlite3
 import csv
 import os 

@@ -10,6 +10,8 @@ uses builtin input function.
 ==================
 """
 
+import re
+
 tables = ["EMPLOYEE", "JOB", "COMPANY", "MANAGER"]
 columns = {
     "EMPLOYEE"  : ["id_employee", "street", "city"],
@@ -70,12 +72,16 @@ def get_attribute(table, attribute_name):
     :rtype: str
     """
 
+    attribute_pattern = r"^(id(_\w{1,8})?)|\bsalary$"  # matches any word up to 10 characters
+
     while True:
         candidate = input(f"Enter {table}'s {attribute_name} value (max. 10 chars): ")
 
-        if len(candidate) <= 10: return candidate
-
-        print(f"{table}'s {attribute_name} value is too long!")
+        if re.match(attribute_pattern, attribute_name):
+            if candidate.isdigit(): return int(candidate)
+        else:
+            if len(candidate) > 10: print(f"{table}'s {attribute_name} value is too long!")
+            else: return candidate
 
 def get_attributes(table):
     """
@@ -87,12 +93,18 @@ def get_attributes(table):
     :rtype: str
     """
 
-    cols = (columns.get(table))
+    cols = columns.get(table)
     print("Available Attributes:")
-    print(*cols, sep="\n")
+    for i, col in enumerate(cols, 1):
+        print(f"{i}. {col}")
     while True:
         candidate = input("Choose a column from the options above: ")
-        if candidate in cols: return candidate
+        if candidate.isdigit():
+            idx = int(candidate)
+            if idx >= 1 and idx <= len(cols):
+                return cols[idx-1]
+        elif candidate in cols:
+            return candidate
         print("Invalid Option")
 
 def get_tables():
@@ -104,10 +116,16 @@ def get_tables():
     """
         
     print("Available Tables:")
-    print(*tables, sep="\n")
+    for i, table in enumerate(tables, 1):
+        print(f"{i}. {table}")
     while True:
-        candidate = input("Choose a table from the options above: ").upper()
-        if candidate in tables: return candidate
+        candidate = input("Choose a table from the options above: ")
+        if candidate.isdigit():
+            idx = int(candidate)
+            if idx >= 1 and idx <= len(tables):
+                return tables[idx-1]
+        elif candidate in tables:
+            return candidate
         print("Invalid Option")
 
 def get_menu_option(max_option):

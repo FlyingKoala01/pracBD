@@ -116,7 +116,7 @@ def view():
     
     elif table == "MANAGER":
         cursor = queries.view_manager()
-        print("ID COMPANY   ||   CITY")
+        print("ID EMPLOYEE   ||   ID MANAGER")
         print("="*25)
         for row in cursor:
             print(f"{row[0]}    ||  {row[1]}")
