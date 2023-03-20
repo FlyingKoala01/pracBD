@@ -22,6 +22,7 @@ def commit_and_close(func):
     """
     def wrapper(*args, **kwargs):
         conn = sqlite3.connect(DB_FILE_PATH)
+        conn.execute("PRAGMA foreign_keys=ON;")
         result = func(conn, *args, **kwargs)
         conn.commit()
         conn.close()

@@ -9,7 +9,7 @@ import csv
 import os 
 
 DB_FILE = "employees.db"
-SQL_FILE = "employees.sql"
+SQL_FILE = "db_init.sql"
 CSV_FILE = "employees.csv"
 
 def check_db():

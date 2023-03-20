@@ -192,7 +192,9 @@ def print_menu():
      2: Delete
      3: View
      4: Modify
-     5: Dump DB
+     5: Export CSV
+     6: Import CSV
+     7: Exit
     <BLANKLINE>
     """
     print("="*20)
