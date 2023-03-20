@@ -156,5 +156,16 @@ def employees_same_city_as_manager(conn):
 
 @commit_and_close
 def employees_in_city(conn, city):
-    query = "SELECT id_employee FROM employee WHERE city = ?"
+    query = f"SELECT id_employee FROM employee WHERE city = ?"
     conn.execute(query, (city))
+
+@commit_and_close
+def employees_by_salary(conn, order):
+    query = f"SELECT id_employee\
+                FROM job\
+                    WHERE id_employee IN (\
+                        SELECT id_employee\
+                        FROM employee\
+                    )\
+                ORDER BY salary ?;"
+    conn.execute(query, (order))
