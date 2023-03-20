@@ -155,6 +155,52 @@ def modify():
 
     print()
 
+def most_employees():
+    cursor = queries.company_with_most_employees()
+    print("ID COMPANY  ||  COUNT ")
+    print("="*20)
+    for row in cursor:
+        print(f"{row[0]}   ||  {row[1]}")
+
+def update_salary_managers():
+    new_salary = int(input("By what factor (%) would you like to increase Managers' salary?"))
+
+    queries.update_managers_salary(new_salary)
+
+def employees_same_city():
+    cursor = queries.employees_same_city()
+    print("ID EMPLOYEE")
+    print("="*15)
+    for row in cursor:
+        print(f"{row[0]}")
+
+def employees_same_city_manager():
+    cursor = queries.employees_same_city_as_manager()
+    print("ID EMPLOYEE")
+    print("="*15)
+    for row in cursor:
+        print(f"{row[0]}")
+
+def employees_by_city():
+    city = input("What city would you like to check?")
+
+    cursor = queries.employees_in_city(city)
+
+    print("ID EMPLOYEE")
+    print("="*15)
+    for row in cursor:
+        print(f"{row[0]}")
+
+def employees_by_salary():
+    order = input("What order would you like to order by the employees salary? [ASC/DESC]")
+
+    cursor = queries.employees_by_salary(order)
+
+    print("ID EMPLOYEE")
+    print("="*15)
+    for row in cursor:
+        print(f"{row[0]}")
+
 MENU_OPTIONS_TEXT = [
     "Insert",
     "Delete",
@@ -162,6 +208,12 @@ MENU_OPTIONS_TEXT = [
     "Modify",
     "Export CSV",
     "Import CSV",
+    "Company with most Employees",
+    "Update Managers Salary",
+    "Employees in the same city",
+    "Employees in the same city as their manager",
+    "Employees in a specific city",
+    "Employees by salary",
     "Exit"
 ]
 
@@ -171,7 +223,13 @@ MENU_OPTIONS_CALLBACKS = [
     view,
     modify,
     database.dump_db,
-    database.load_db
+    database.load_db,
+    most_employees,
+    update_salary_managers,
+    employees_same_city,
+    employees_same_city_manager,
+    employees_by_city,
+    employees_by_salary
 ]
 
 def print_menu():
@@ -194,7 +252,13 @@ def print_menu():
      4: Modify
      5: Export CSV
      6: Import CSV
-     7: Exit
+     7: Company with most Employees
+     8: Update Managers Salary
+     9: Employees in the same city
+     10: Employees in the same city as their manager
+     11: Employees in a specific city
+     12: Employees by salary
+     13: Exit
     <BLANKLINE>
     """
     print("="*20)
