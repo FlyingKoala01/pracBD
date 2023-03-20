@@ -72,7 +72,7 @@ def get_attribute(table, attribute_name):
     :rtype: str
     """
 
-    attribute_pattern = r"^(id(_\w{1,8})?)|\bsalary$"  # matches any word up to 10 characters
+    attribute_pattern = r"^(id(_\w{1,8})?)|\bsalary$"
 
     while True:
         candidate = input(f"Enter {table}'s {attribute_name} value (max. 10 chars): ")

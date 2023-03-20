@@ -74,13 +74,13 @@ def modify_job(conn, id_employee, col, value):
 
 @commit_and_close
 def modify_company(conn, id_company, col, value):
-    query = f"UPDATE company SET ? = ? WHERE id_company = ?"
+    query = f"UPDATE company SET {col} = ? WHERE id_company = ?"
     conn.execute(query, (value, id_company))
 
 
 @commit_and_close
-def modify_manager(conn, id_employee, id_employee_coordinator):
-    query = f"UPDATE manager SET ? = ? WHERE id_employee = ?"
+def modify_manager(conn, id_employee, col, id_employee_coordinator):
+    query = f"UPDATE manager SET {col} = ? WHERE id_employee = ?"
     conn.execute(query, (id_employee, id_employee_coordinator))
 
 def view_employee():
