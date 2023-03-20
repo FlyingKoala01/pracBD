@@ -103,3 +103,58 @@ def view_manager():
     conn = sqlite3.connect(DB_FILE_PATH)
     cursor = conn.execute("SELECT * FROM manager")
     return cursor.fetchall()
+
+@commit_and_close
+def company_with_most_employees(conn):
+    query = "SELECT id_company, COUNT(id_employee) AS total_employees\
+            FROM job\
+            GROUP BY id_company\
+            ORDER BY total_employees DESC\
+            LIMIT 1;"
+    conn.execute(query)
+
+@commit_and_close
+def update_managers_salary(conn, increase_factor):
+    query = "UPDATE job\
+            SET salary = salary * ?\
+            WHERE id_employee IN (\
+            SELECT id_employee_coordinator\
+            FROM manager);"
+    conn.execute(query, (increase_factor))
+
+@commit_and_close
+def employees_same_city(conn):
+    query = "SELECT id_employee\
+            FROM employee\
+            WHERE city = (\
+                SELECT city\
+                FROM company\
+                WHERE id_company = (\
+                    SELECT id_company\
+                    FROM (\
+                        SELECT id_employee, id_company\
+                        FROM job\
+                    ) AS job_employee\
+                    WHERE job_employee.id_employee = employee.id_employee\
+                ));"
+    conn.execute(query)
+
+@commit_and_close
+def employees_same_city_as_manager(conn):
+    query = "SELECT id_employee\
+            FROM employee\
+            WHERE city = (\
+                SELECT city\
+                FROM employee\
+                WHERE id_employee IN (\
+                    SELECT id_employee_coordinador\
+                    FROM manager\
+                    WHERE id_employee = employee.id_employee\
+                )\
+                LIMIT 1);"
+    conn.execute(query)
+
+@commit_and_close
+def employees_in_city(conn, city):
+    query = "SELECT id_employee FROM employee WHERE city = ?"
+    conn.execute(query, (city))
