@@ -11,7 +11,7 @@ CREATE TABLE job (
     id_company INT NOT NULL,
     salary FLOAT NOT NULL,
     FOREIGN KEY (id_employee) REFERENCES employee,
-    FOREIGN KEY (id_company) REFERENCES id_company
+    FOREIGN KEY (id_company) REFERENCES company
     );
 
 CREATE TABLE company (

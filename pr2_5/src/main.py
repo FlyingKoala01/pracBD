@@ -33,9 +33,9 @@ def insert():
         queries.insert_employee(id_employee, street, city)
     
     elif table == "JOB":
-        id_employee = input_manager.get_attribute("jobs", "id_employee")
-        id_company = input_manager.get_attribute("jobs", "id_company")
-        salary = input_manager.get_attribute("jobs", "salary")
+        id_employee = input_manager.get_attribute("job", "id_employee")
+        id_company = input_manager.get_attribute("job", "id_company")
+        salary = input_manager.get_attribute("job", "salary")
 
         queries.insert_job(id_employee, id_company, salary)
     
