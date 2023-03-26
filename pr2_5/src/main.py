@@ -19,11 +19,11 @@ import database
 def insert():
     """
     Option used to insert a new element (row) into a specific table.
-    Once user selects the table, it will ask for the attributes of that given table and lastly run 
-    a hard-coded SQL query to insert the element.
+    Once user selects the table, it will ask for the attributes of that 
+    given table and lastly run a hard-coded SQL query to insert the element.
 
     The function also checks the user inputm, making sure the format is correct. 
-    See `input_manager.py`for more information. 
+    See `input_manager.py` for more information. 
 
     """
 
@@ -82,8 +82,8 @@ def insert():
 def delete():
     """
     Option used to delete an element (row) from a specific table.
-    Once user selects the table, it will ask for the primary key of that given table and lastly run 
-    a hard-coded SQL query to delete the row.
+    Once user selects the table, it will ask for the primary key of that 
+    given table and lastly run a hard-coded SQL query to delete the row.
 
     """
 
@@ -166,8 +166,9 @@ def view():
 
 def modify():
     """
-    Option used to modify a value of a specific column of a specific row from a table.
-
+    Option used to modify a value of a specific column of a specific
+    row from a table. It will ask for a primary key, a column 
+    to be modified and a new value.
     """
     table = input_manager.get_tables()
     if table == "EMPLOYEE":
@@ -180,7 +181,7 @@ def modify():
         col = input_manager.get_attributes(table)
         if not(col): return 
 
-        value = input("New value: ")
+        value = input_manager.get_attribute("employee", col)
         queries.modify_employee(id_employee, col, value)
     
     elif table == "JOB":
@@ -191,6 +192,8 @@ def modify():
             return
 
         col = input_manager.get_attributes(table)
+        if not(col): return 
+
         value = input_manager.get_attribute("job", col)
         queries.modify_job(id_employee, col, value )
     
@@ -202,6 +205,8 @@ def modify():
             return
 
         col = input_manager.get_attributes(table)
+        if not(col): return 
+
         value = input_manager.get_attribute("company", col)
         queries.modify_company(id_company, col, value)
     
@@ -213,12 +218,17 @@ def modify():
             return
         
         col = input_manager.get_attributes(table)
+        if not(col): return 
+
         value = input_manager.get_attribute("manager", col)
         queries.modify_manager(id_employee, col, value)
 
     print()
 
 def most_employees():
+    """
+    Function used to show the company's ID with most employees.
+    """
     cursor = queries.company_with_most_employees()
     print("ID COMPANY  ||  COUNT ")
     print("="*20)
@@ -226,25 +236,30 @@ def most_employees():
         print(f"{row[0]}   ||  {row[1]}")
 
 def update_salary_managers():
+    """
+    Function used to update the salary of managers. The user will input a 
+    percentage value to increase the present managers' salaries.
+    """
     new_salary = input_manager.get_new_salary()
 
     queries.update_managers_salary(new_salary)
 
 def employees_same_city():
+    """
+    Function used to return the employees' IDs who live in the same city 
+    where they work.
+    """
     cursor = queries.employees_same_city()
     print("ID EMPLOYEE")
     print("="*15)
     for row in cursor:
         print(f"{row[0]}")
 
-def employees_same_city_manager():
-    cursor = queries.employees_same_city_as_manager()
-    print("ID EMPLOYEE")
-    print("="*15)
-    for row in cursor:
-        print(f"{row[0]}")
-
 def employees_by_city():
+    """
+    Function asks user to input a city's name and returns the employee's IDs
+    for those who work in that city.
+    """
     city = input_manager.get_new_city()
 
     cursor = queries.employees_in_city(city)
@@ -255,6 +270,10 @@ def employees_by_city():
         print(f"{row[0]}")
 
 def employees_by_salary():
+    """
+    Displays all the employees by salary in ascending or descending order, 
+    depending on what the user wants.
+    """
     order = input_manager.asc_or_desc()
 
     cursor = queries.employees_by_salary(order)
@@ -274,7 +293,6 @@ MENU_OPTIONS_TEXT = [
     "Company with most Employees",
     "Update Managers Salary",
     "Employees in the same city where they work",
-    "Employees in the same city as their manager",
     "Employees in a specific city",
     "Employees by salary",
     "Exit"
@@ -290,7 +308,6 @@ MENU_OPTIONS_CALLBACKS = [
     most_employees,
     update_salary_managers,
     employees_same_city,
-    employees_same_city_manager,
     employees_by_city,
     employees_by_salary
 ]
@@ -307,21 +324,19 @@ def print_menu():
     ====================
     EMPLOYER MANAGER MENU
     ====================
-    <BLANKLINE>
     Opcions:
-     1: Insert
-     2: Delete
-     3: View
-     4: Modify
-     5: Export CSV
-     6: Import CSV
-     7: Company with most Employees
-     8: Update Managers Salary
-     9: Employees in the same city
-     10: Employees in the same city as their manager
-     11: Employees in a specific city
-     12: Employees by salary
-     13: Exit
+    1: Insert
+    2: Delete
+    3: View
+    4: Modify
+    5: Export CSV
+    6: Import CSV
+    7: Company with most Employees
+    8: Update Managers Salary
+    9: Employees in the same city where they work
+    10: Employees in a specific city
+    11: Employees by salary
+    12: Exit
     <BLANKLINE>
     """
     print("="*20)
@@ -346,6 +361,6 @@ if __name__=="__main__":
 
         print()
         MENU_OPTIONS_CALLBACKS[option-1]()
-        # We wait 1.5 sec in order to let the user read the result.
-        sleep(1.5)
+        # We wait 2 sec in order to let the user read the result.
+        sleep(2)
         print()

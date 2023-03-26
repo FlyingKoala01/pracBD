@@ -25,3 +25,4 @@ CREATE TABLE manager (
     FOREIGN KEY (id_employee) REFERENCES employee,
     FOREIGN KEY (id_employee_coordinator) REFERENCES employee
     );
+

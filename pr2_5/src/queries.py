@@ -174,22 +174,6 @@ def employees_same_city(conn):
     return cursor.fetchall()
 
 @commit_and_close
-def employees_same_city_as_manager(conn):
-    query = "SELECT id_employee\
-            FROM employee\
-            WHERE city = (\
-                SELECT city\
-                FROM employee\
-                WHERE id_employee IN (\
-                    SELECT id_employee_coordinator\
-                    FROM manager\
-                    WHERE id_employee = employee.id_employee\
-                )\
-                LIMIT 1);"
-    cursor = conn.execute(query)
-    return cursor.fetchall()
-
-@commit_and_close
 def employees_in_city(conn, city):
     query = f"SELECT id_employee FROM employee WHERE city = ?"
     cursor = conn.execute(query, (city,))

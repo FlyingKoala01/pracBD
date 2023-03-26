@@ -59,7 +59,7 @@ def get_attribute(table, attribute_name):
     attribute_pattern = r"^(id(_\w{1,8})?)|\bsalary$"
 
     while True:
-        candidate = input(f"Enter {table}'s {attribute_name} (max. 10 chars): ")
+        candidate = input(f"Enter {table}'s {attribute_name}: ")
 
         if re.match(attribute_pattern, attribute_name):
             if candidate.isdigit(): return int(candidate)
@@ -85,7 +85,7 @@ def get_new_salary():
         candidate = input("By what factor (%) would you like to increase Managers' salary?")
         
         if not(candidate.isdigit()): print("Invalid salary parameter. Use numbers only") 
-        else: return int(candidate)
+        else: return int(candidate/100)
 
 def asc_or_desc():
     """

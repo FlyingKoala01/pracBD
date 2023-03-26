@@ -1,6 +1,9 @@
 """
 ==================
-This module is used to create to handle the DB. Its creation and import/export of its contents into a CSV file
+
+This module is used to create and to handle the DB. 
+Its creation and import/export of its contents into a CSV file.
+
 ==================
 """
 
@@ -14,7 +17,8 @@ CSV_FILE = "employees.csv"
 
 def check_db():
     """
-    Checks if the database file exists, if not, it checks for an SQL file to be used to create the database
+    Checks if the database file exists, if not, it checks for an SQL 
+    file to be used to create the database
     """
     if not os.path.isfile(DB_FILE):
         print(f"{DB_FILE} not found. Creating database from {SQL_FILE}...")
@@ -32,7 +36,8 @@ def check_db():
 
 def dump_db():
     """
-    Function used to create a folder with the .csv files containing all the information from the different tables
+    Function used to create a folder with the .csv files containing all 
+    the information from the different tables
     """
     dir_name = "csv_files"
     os.makedirs(dir_name, exist_ok=True)
@@ -48,8 +53,9 @@ def dump_db():
 
 def load_db():
     """
-    Reads the contents of each csv file inside the folder created with the function `dumb_db()`. ALl the contents 
-    from the files are saved in the database.
+    Reads the contents of each csv file inside the folder created with 
+    the function `dumb_db()`. ALl the contents from the files are saved
+    in the database.
     """
     with sqlite3.connect(DB_FILE) as conn:
         tables = ["employee", "job", "company", "manager"]
