@@ -22,11 +22,19 @@ def insert():
     Once user selects the table, it will ask for the attributes of that given table and lastly run 
     a hard-coded SQL query to insert the element.
 
+    The function also checks the user inputm, making sure the format is correct. 
+    See `input_manager.py`for more information. 
+
     """
 
     table = input_manager.get_tables()
     if table == "EMPLOYEE":
         id_employee = input_manager.get_attribute("employee", "id_employee")
+        
+        if queries.check_employee(id_employee): 
+            print("This ID is already registered.")
+            return
+        
         street = input_manager.get_attribute("employee", "street")
         city = input_manager.get_attribute("employee", "city")
 
@@ -34,21 +42,39 @@ def insert():
     
     elif table == "JOB":
         id_employee = input_manager.get_attribute("job", "id_employee")
+        if not (queries.check_employee(id_employee)): 
+            print("This ID is not registered. Make sure to register the employee before adding his/her job.")
+            return
         id_company = input_manager.get_attribute("job", "id_company")
+        if not (queries.check_company(id_company)): 
+            print("This ID is not registered. Make sure to register the company before adding the employee's job.")
+            return
+        
         salary = input_manager.get_attribute("job", "salary")
 
         queries.insert_job(id_employee, id_company, salary)
     
     elif table == "COMPANY":
         id_company = input_manager.get_attribute("company", "id_company")
+        if queries.check_company(id_company): 
+            print("This ID is already registered.")
+            return
+        
         city = input_manager.get_attribute("company", "city")
 
         queries.insert_company(id_company, city)
     
     elif table == "MANAGER":
         id_employee = input_manager.get_attribute("manager", "id_employee")
+        if not (queries.check_employee(id_employee)): 
+            print("This ID is not registered. Make sure to register the employee before assigning its manager.")
+            return
+        
         id_employee_coordinator = input_manager.get_attribute("manager", "id_employee_coordinator")
-
+        if not (queries.check_employee(id_employee_coordinator)): 
+            print("This ID is not registered. Make sure to register the employee before registering him/her as a manager.")
+            return
+        
         queries.insert_manager(id_employee, id_employee_coordinator)
 
     print()
@@ -65,23 +91,38 @@ def delete():
     if table == "EMPLOYEE":
         id_employee = input_manager.get_attribute("employee", "id_employee")
         
+        if not (queries.check_employee(id_employee)): 
+            print("This ID is not registered.")
+            return
+
         queries.delete_employee(id_employee)
     
     elif table == "JOB":
         id_employee = input_manager.get_attribute("jobs", "id_employee")
+
+        if not (queries.check_job(id_employee)): 
+            print("This ID is not registered.")
+            return
 
         queries.delete_job(id_employee)
     
     elif table == "COMPANY":
         id_company = input_manager.get_attribute("company", "id_company")
         
+        if not (queries.check_company(id_company)): 
+            print("This ID is not registered.")
+            return
+        
         queries.delete_company(id_company)
     
     elif table == "MANAGER":
         id_employee = input_manager.get_attribute("manager", "id_employee")
-        id_employee_coordinator = input_manager.get_attribute("manager", "id_employee_coordinator")
 
-        queries.delete_manager(id_employee, id_employee_coordinator)
+        if not (queries.check_company(id_company)): 
+            print("This ID is not registered.")
+            return
+        
+        queries.delete_manager(id_employee)
 
     print()
 
@@ -131,26 +172,48 @@ def modify():
     table = input_manager.get_tables()
     if table == "EMPLOYEE":
         id_employee = input_manager.get_attribute("employee", "id_employee")
+
+        if not (queries.check_employee(id_employee)): 
+            print("This ID is not registered. Make sure to register the employee before modifying its values.")
+            return
+
         col = input_manager.get_attributes(table)
+        if not(col): return 
+
         value = input("New value: ")
         queries.modify_employee(id_employee, col, value)
     
     elif table == "JOB":
-        id_employee = input_manager.get_attribute("jobs", "id_employee")
+        id_employee = input_manager.get_attribute("job", "id_employee")
+
+        if not (queries.check_job(id_employee)): 
+            print("This ID is not registered.")
+            return
+
         col = input_manager.get_attributes(table)
-        value = input("New value: ")
+        value = input_manager.get_attribute("job", col)
         queries.modify_job(id_employee, col, value )
     
     elif table == "COMPANY":
         id_company = input_manager.get_attribute("company", "id_company")
+
+        if not (queries.check_company(id_company)): 
+            print("This ID is not registered.")
+            return
+
         col = input_manager.get_attributes(table)
-        value = input("New value: ")
+        value = input_manager.get_attribute("company", col)
         queries.modify_company(id_company, col, value)
     
     elif table == "MANAGER":
         id_employee = input_manager.get_attribute("manager", "id_employee")
+
+        if not (queries.check_company(id_company)): 
+            print("This ID is not registered.")
+            return
+        
         col = input_manager.get_attributes(table)
-        value = input("New value: ")
+        value = input_manager.get_attribute("manager", col)
         queries.modify_manager(id_employee, col, value)
 
     print()
@@ -163,7 +226,7 @@ def most_employees():
         print(f"{row[0]}   ||  {row[1]}")
 
 def update_salary_managers():
-    new_salary = int(input("By what factor (%) would you like to increase Managers' salary?"))
+    new_salary = input_manager.get_new_salary()
 
     queries.update_managers_salary(new_salary)
 
@@ -182,7 +245,7 @@ def employees_same_city_manager():
         print(f"{row[0]}")
 
 def employees_by_city():
-    city = input("What city would you like to check?")
+    city = input_manager.get_new_city()
 
     cursor = queries.employees_in_city(city)
 
@@ -192,7 +255,7 @@ def employees_by_city():
         print(f"{row[0]}")
 
 def employees_by_salary():
-    order = input("What order would you like to order by the employees salary? [ASC/DESC]")
+    order = input_manager.asc_or_desc()
 
     cursor = queries.employees_by_salary(order)
 
@@ -210,7 +273,7 @@ MENU_OPTIONS_TEXT = [
     "Import CSV",
     "Company with most Employees",
     "Update Managers Salary",
-    "Employees in the same city",
+    "Employees in the same city where they work",
     "Employees in the same city as their manager",
     "Employees in a specific city",
     "Employees by salary",
@@ -283,6 +346,6 @@ if __name__=="__main__":
 
         print()
         MENU_OPTIONS_CALLBACKS[option-1]()
-        # We wait 1 sec in order to let the user read the result.
-        sleep(2)
+        # We wait 1.5 sec in order to let the user read the result.
+        sleep(1.5)
         print()

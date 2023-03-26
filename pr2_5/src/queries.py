@@ -28,10 +28,38 @@ def commit_and_close(func):
         except sqlite3.IntegrityError:
             print("ERROR: Before you register a job or a manager, make sure the given employee(s) ID and/or the company ID are registered.")    
             return
+        except sqlite3.OperationalError:
+            print("Column not found. Make sure you spelled the column's name correctly.")
+            return
         conn.commit()
         conn.close()
         return result
     return wrapper
+
+@commit_and_close
+def check_employee(conn, id_employee):
+    cursor = conn.execute("SELECT COUNT(*) FROM employee WHERE id_employee = ?", (id_employee,))
+    result = cursor.fetchone()[0]
+    return result
+
+@commit_and_close
+def check_company(conn, id_company):
+    cursor = conn.execute("SELECT COUNT(*) FROM company WHERE id_company = ?", (id_company,))
+    result = cursor.fetchone()[0]
+    return result
+
+@commit_and_close
+def check_job(conn, id_employee):
+    cursor = conn.execute("SELECT COUNT(*) FROM job WHERE id_employee = ?", (id_employee,))
+    result = cursor.fetchone()[0]
+    return result
+
+@commit_and_close
+def check_manager(conn, id_employee):
+    cursor = conn.execute("SELECT COUNT(*) FROM manager WHERE id_employee = ?", (id_employee,))
+    result = cursor.fetchone()[0]
+    return result
+
 
 @commit_and_close
 def insert_employee(conn, id_employee, street, city):
@@ -59,7 +87,7 @@ def delete_job(conn, id_employee):
 
 @commit_and_close
 def delete_company(conn, id_company):
-    conn.execute("DELETE FROM company WHERE id = ?", (id_company,))
+    conn.execute("DELETE FROM company WHERE id_company = ?", (id_company,))
 
 @commit_and_close
 def delete_manager(conn, id_employee):
@@ -88,23 +116,23 @@ def modify_manager(conn, id_employee, col, id_employee_coordinator):
     query = f"UPDATE manager SET {col} = ? WHERE id_employee = ?"
     conn.execute(query, (id_employee, id_employee_coordinator))
 
-def view_employee():
-    conn = sqlite3.connect(DB_FILE_PATH)
+@commit_and_close
+def view_employee(conn):
     cursor = conn.execute("SELECT * FROM employee")
     return cursor.fetchall()
 
-def view_job():
-    conn = sqlite3.connect(DB_FILE_PATH)
+@commit_and_close
+def view_job(conn):
     cursor = conn.execute("SELECT * FROM job")
     return cursor.fetchall()
 
-def view_company():
-    conn = sqlite3.connect(DB_FILE_PATH)
+@commit_and_close
+def view_company(conn):
     cursor = conn.execute("SELECT * FROM company")
     return cursor.fetchall()
 
-def view_manager():
-    conn = sqlite3.connect(DB_FILE_PATH)
+@commit_and_close
+def view_manager(conn):
     cursor = conn.execute("SELECT * FROM manager")
     return cursor.fetchall()
 
@@ -115,7 +143,8 @@ def company_with_most_employees(conn):
             GROUP BY id_company\
             ORDER BY total_employees DESC\
             LIMIT 1;"
-    conn.execute(query)
+    cursor = conn.execute(query)
+    return cursor.fetchall()
 
 @commit_and_close
 def update_managers_salary(conn, increase_factor):
@@ -124,7 +153,7 @@ def update_managers_salary(conn, increase_factor):
             WHERE id_employee IN (\
             SELECT id_employee_coordinator\
             FROM manager);"
-    conn.execute(query, (increase_factor))
+    conn.execute(query, (increase_factor,))
 
 @commit_and_close
 def employees_same_city(conn):
@@ -141,7 +170,8 @@ def employees_same_city(conn):
                     ) AS job_employee\
                     WHERE job_employee.id_employee = employee.id_employee\
                 ));"
-    conn.execute(query)
+    cursor = conn.execute(query)
+    return cursor.fetchall()
 
 @commit_and_close
 def employees_same_city_as_manager(conn):
@@ -151,25 +181,25 @@ def employees_same_city_as_manager(conn):
                 SELECT city\
                 FROM employee\
                 WHERE id_employee IN (\
-                    SELECT id_employee_coordinador\
+                    SELECT id_employee_coordinator\
                     FROM manager\
                     WHERE id_employee = employee.id_employee\
                 )\
                 LIMIT 1);"
-    conn.execute(query)
+    cursor = conn.execute(query)
+    return cursor.fetchall()
 
 @commit_and_close
 def employees_in_city(conn, city):
     query = f"SELECT id_employee FROM employee WHERE city = ?"
-    conn.execute(query, (city))
+    cursor = conn.execute(query, (city,))
+    return cursor.fetchall()
 
 @commit_and_close
 def employees_by_salary(conn, order):
-    query = f"SELECT id_employee\
-                FROM job\
-                    WHERE id_employee IN (\
-                        SELECT id_employee\
-                        FROM employee\
-                    )\
-                ORDER BY salary ?;"
-    conn.execute(query, (order))
+    if order == "asc":
+        query = f"SELECT id_employee FROM job WHERE id_employee IN (SELECT id_employee FROM employee) ORDER BY salary ASC;"
+    else:
+        query = f"SELECT id_employee FROM job WHERE id_employee IN (SELECT id_employee FROM employee) ORDER BY salary DESC;"
+    cursor = conn.execute(query)
+    return cursor.fetchall()

@@ -44,22 +44,6 @@ def _get_integer_in_range(prompt, range_start, range_end, out_of_range_message):
         except ValueError:
             print("Number not valid!")
 
-def yes_or_no(prompt):
-    """
-    A simple yes or no question. An empty answer (enter key) is considered a
-    yes.
-
-    :param str prompt: String indicating the prompt shown in the terminal.
-
-    :return: The response of the question: True in case of "yes" answer.
-    :rtype: bool
-    """
-    options = ["Y", "N", ""] #Empty input is considered as a yes.
-    while True:
-        candidate = input(f"{prompt} [Y/n]: ").upper()
-        if candidate in options: return candidate!="N"
-        print("Invalid Option")
-
 def get_attribute(table, attribute_name):
     """
     Asks for a specific table's attribute and returns it.
@@ -75,13 +59,45 @@ def get_attribute(table, attribute_name):
     attribute_pattern = r"^(id(_\w{1,8})?)|\bsalary$"
 
     while True:
-        candidate = input(f"Enter {table}'s {attribute_name} value (max. 10 chars): ")
+        candidate = input(f"Enter {table}'s {attribute_name} (max. 10 chars): ")
 
         if re.match(attribute_pattern, attribute_name):
             if candidate.isdigit(): return int(candidate)
         else:
-            if len(candidate) > 10: print(f"{table}'s {attribute_name} value is too long!")
+            if len(candidate) > 10: print(f"{table}'s {attribute_name} is too long!")
             else: return candidate
+
+def get_new_city():
+    """
+    Function used to check how many employees work in a specific city.
+    """
+    while True:
+        candidate = input("What city would you like to check? ")
+        
+        if not(candidate.isalpha()): print("Invalid city parameter. Use letters only") 
+        else: return (candidate)
+
+def get_new_salary():
+    """
+    Function used to get the percentage value from the user.
+    """
+    while True:
+        candidate = input("By what factor (%) would you like to increase Managers' salary?")
+        
+        if not(candidate.isdigit()): print("Invalid salary parameter. Use numbers only") 
+        else: return int(candidate)
+
+def asc_or_desc():
+    """
+    Function to ensure user only inputs two options "asc" or "desc". This function also particularly
+    important considering the query where the result will be used as it could potentially lead to SQLi.
+    """
+    
+    while True:
+        candidate = input("What order would you like to order by the employees salary? [ASC/DESC] ")
+        
+        if candidate.lower() != "asc" and candidate.lower() != "desc": print("Invalid order parameter. Select ASC or DESC only") 
+        else: return candidate
 
 def get_attributes(table):
     """
@@ -97,14 +113,19 @@ def get_attributes(table):
     print("Available Attributes:")
     for i, col in enumerate(cols, 1):
         print(f"{i}. {col}")
+    print(f"{i+1}. EXIT")
     while True:
         candidate = input("Choose a column from the options above: ")
         if candidate.isdigit():
             idx = int(candidate)
             if idx >= 1 and idx <= len(cols):
                 return cols[idx-1]
+            elif idx == (i+1):
+                return
         elif candidate in cols:
             return candidate
+        elif candidate == i or candidate == "EXIT":
+            return 
         print("Invalid Option")
 
 def get_tables():
@@ -118,14 +139,19 @@ def get_tables():
     print("Available Tables:")
     for i, table in enumerate(tables, 1):
         print(f"{i}. {table}")
+    print(f"{i+1}. EXIT")
     while True:
         candidate = input("Choose a table from the options above: ")
         if candidate.isdigit():
             idx = int(candidate)
             if idx >= 1 and idx <= len(tables):
                 return tables[idx-1]
+            elif idx == (i+1):
+                return
         elif candidate in tables:
             return candidate
+        elif candidate == "EXIT":
+            return 
         print("Invalid Option")
 
 def get_menu_option(max_option):
