@@ -22,8 +22,8 @@ def insert():
     Once user selects the table, it will ask for the attributes of that 
     given table and lastly run a hard-coded SQL query to insert the element.
 
-    The function also checks the user inputm, making sure the format is correct. 
-    See `input_manager.py` for more information. 
+    The function also checks the user input, making sure the format is correct. 
+    See `:module: input_manager.py` for more information. 
 
     """
 
@@ -45,6 +45,7 @@ def insert():
         if not (queries.check_employee(id_employee)): 
             print("This ID is not registered. Make sure to register the employee before adding his/her job.")
             return
+        
         id_company = input_manager.get_attribute("job", "id_company")
         if not (queries.check_company(id_company)): 
             print("This ID is not registered. Make sure to register the company before adding the employee's job.")

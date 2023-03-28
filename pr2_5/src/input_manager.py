@@ -70,6 +70,9 @@ def get_attribute(table, attribute_name):
 def get_new_city():
     """
     Function used to check how many employees work in a specific city.
+
+    :return: The specified city's name
+    :rtype: str
     """
     while True:
         candidate = input("What city would you like to check? ")
@@ -80,6 +83,9 @@ def get_new_city():
 def get_new_salary():
     """
     Function used to get the percentage value from the user.
+
+    :return: The percentage value
+    :rtype: int
     """
     while True:
         candidate = input("By what factor (%) would you like to increase Managers' salary?")
@@ -89,8 +95,12 @@ def get_new_salary():
 
 def asc_or_desc():
     """
-    Function to ensure user only inputs two options "asc" or "desc". This function also particularly
-    important considering the query where the result will be used as it could potentially lead to SQLi.
+    Function to ensure user only inputs two options "asc" or "desc". 
+    This function is particularly important considering how the query 
+    where the result of this function will be used as it could potentially lead to SQLi.
+    
+    :return: The specified order "ASC" or "DESC"
+    :rtype: str
     """
     
     while True:

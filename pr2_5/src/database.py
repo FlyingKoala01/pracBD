@@ -18,7 +18,13 @@ CSV_FILE = "employees.csv"
 def check_db():
     """
     Checks if the database file exists, if not, it checks for an SQL 
-    file to be used to create the database
+    file to be used to create the database.
+
+    Filenames are hard-coded in the source code. 
+    If you wish to use a personalized SQL file, 
+    make sure it is named: `db_init.sql`.
+    If you wish to use a personalized DB file, 
+    make sure it is named: `employees.db`.
     """
     if not os.path.isfile(DB_FILE):
         print(f"{DB_FILE} not found. Creating database from {SQL_FILE}...")
@@ -36,8 +42,9 @@ def check_db():
 
 def dump_db():
     """
-    Function used to create a folder with the .csv files containing all 
-    the information from the different tables
+    Function used to create a folder named "csv_files" in the current directory.
+    The new directory will contain all .csv files, each file storing a 
+    table from the DB.
     """
     dir_name = "csv_files"
     os.makedirs(dir_name, exist_ok=True)
@@ -53,8 +60,8 @@ def dump_db():
 
 def load_db():
     """
-    Reads the contents of each csv file inside the folder created with 
-    the function `dumb_db()`. ALl the contents from the files are saved
+    Reads the contents of each .csv file inside the directory "csv_files/ created with 
+    the function `dumb_db()`. All the contents from the files are loaded
     in the database.
     """
     with sqlite3.connect(DB_FILE) as conn:

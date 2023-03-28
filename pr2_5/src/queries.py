@@ -4,7 +4,30 @@
 This module contains all of the possible queries available to the user. 
 Having hard-coded and ease-to-use queries makes the main module more readable and simple to expand.
 
-The purpose of each query should be self-explanatory thanks to its name.
+The purpose of each query should be self-explanatory due to its name.
+
+The decorator handles two exceptions:
+    - Integrity Error
+    - Operational Error
+
+Due to the nature of the module :mod:`input_manager.py`, these two errors should never happen. 
+However, to ensure the correct execution both exceptions are being handled.
+
+Examples of available queries:
+    - Checking for primary key per table
+    - Inserting element
+    - Deleting element
+    - Viewing elements
+    - Modifying element
+
+Specific topic-related queries:
+    - Checking company with most employees
+    - Updating managers' salary
+    - Checking employees who live in the same city where they work
+    - Checking employees in a specified city
+    - Ordering employees by salary
+    
+Check source code to see in greated detail each query.
 
 ==================
 """
@@ -18,7 +41,8 @@ DB_FILE_PATH = f"{PROJECT_ABS_PATH}/employees.db"
 
 def commit_and_close(func):
     """
-    A decorator used to add basic SQLlite requirements for most queries. Eliminates code-repetition from module
+    A decorator used to add basic SQLlite requirements for most queries. Eliminates code-repetition from module.
+    The decorator connects to the DB before executing any query. Commits the query, closes the DB and returns the result.
     """
     def wrapper(*args, **kwargs):
         conn = sqlite3.connect(DB_FILE_PATH)
@@ -29,7 +53,7 @@ def commit_and_close(func):
             print("ERROR: Before you register a job or a manager, make sure the given employee(s) ID and/or the company ID are registered.")    
             return
         except sqlite3.OperationalError:
-            print("Column not found. Make sure you spelled the column's name correctly.")
+            print("ERROR: Column not found. Make sure you spelled the column's name correctly.")
             return
         conn.commit()
         conn.close()

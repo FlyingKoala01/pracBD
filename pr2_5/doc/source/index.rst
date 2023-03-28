@@ -9,6 +9,7 @@ Documentation The Employees DB
 
 .. image:: upc.jpg 	
    :width: 350
+   :align: center
 
 This program is a basic application to handle a database about employees.
 Below there is the ER Diagram showing how the database is structured. The 
@@ -16,9 +17,10 @@ application handles the following actions:
 
 .. image:: 2_3Empleats.png
    :width: 350
+   :align: center
 
 - **Insert**: User introduces an element in a table
-- **Delete**: User deletes an element in a table
+- **Delete**: User deletes an element from a table
 - **Modify**: User modifies a specific element from a table
 - **View**: User selects a table and displays its rows
 - **Specific Queries**: There are specific queries available to the user. See the main module for more information
