@@ -88,10 +88,10 @@ def get_new_salary():
     :rtype: int
     """
     while True:
-        candidate = input("By what factor (%) would you like to increase Managers' salary?")
+        candidate = input("By what factor (%) would you like to increase Managers' salary? ")
         
         if not(candidate.isdigit()): print("Invalid salary parameter. Use numbers only") 
-        else: return int(candidate/100)
+        else: return int(candidate)/100
 
 def asc_or_desc():
     """
