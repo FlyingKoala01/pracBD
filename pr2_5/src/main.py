@@ -23,7 +23,7 @@ def insert():
     given table and lastly run a hard-coded SQL query to insert the element.
 
     The function also checks the user input, making sure the format is correct. 
-    See `:module: input_manager.py` for more information. 
+    See :mod:`input_manager.py` for more information. 
 
     """
 

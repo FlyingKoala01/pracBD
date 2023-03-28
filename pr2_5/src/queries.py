@@ -50,7 +50,7 @@ def commit_and_close(func):
         try:
             result = func(conn, *args, **kwargs)
         except sqlite3.IntegrityError:
-            print("ERROR: Before you register a job or a manager, make sure the given employee(s) ID and/or the company ID are registered.")    
+            print("ERROR: Integrity Error.\n You may have referenced a non-existent ID or you may have tried to add an already existent primary ID.")    
             return
         except sqlite3.OperationalError:
             print("ERROR: Column not found. Make sure you spelled the column's name correctly.")
@@ -173,7 +173,7 @@ def company_with_most_employees(conn):
 @commit_and_close
 def update_managers_salary(conn, increase_factor):
     query = "UPDATE job\
-            SET salary = salary * ?\
+            SET salary = (salary + salary * ?)\
             WHERE id_employee IN (\
             SELECT id_employee_coordinator\
             FROM manager);"

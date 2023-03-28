@@ -23,7 +23,7 @@ application handles the following actions:
 - **Delete**: User deletes an element from a table
 - **Modify**: User modifies a specific element from a table
 - **View**: User selects a table and displays its rows
-- **Specific Queries**: There are specific queries available to the user. See the main module for more information
+- **Specific Queries**: Strongly related to the DB theme. See the main module for more information
 
 The application is very robust and checks for all user inputs, ensuring that
 the user will not insert invalid data nor attempt to perform SQL injection.
