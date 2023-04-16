@@ -145,3 +145,32 @@ INSERT INTO detall (codiComanda, codiProducte, quantitat, preu) VALUES
 -- ) AS avgs ON e.departament = avgs.departament 
 -- WHERE e.salari > avgs.AvgSalary;
 
+-- 8)
+-- SELECT * FROM empleats WHERE ofici = (SELECT ofici FROM empleats WHERE cognom = 'SALA');
+
+-- 9)
+-- SELECT nom, ofici FROM empleats WHERE departament = 20 AND ofici IN (SELECT ofici FROM empleats WHERE departament = (SELECT numero FROM departaments WHERE nom = 'VENDES'));
+
+-- 10)
+-- SELECT * FROM empleats WHERE ofici = 'NEGRO' OR salari >= (SELECT salari FROM empleats WHERE cognom = 'GIL');
+
+-- 11)
+-- SELECT empleats.codi, empleats.cognom, departaments.nom FROM empleats JOIN departaments ON empleats.departament = departaments.numero WHERE empleats.codi IN (SELECT cap FROM empleats) ORDER BY empleats.cognom;
+
+-- 12)
+-- SELECT departament, SUM(salari) AS import_global FROM empleats GROUP BY departament ORDER BY import_global DESC;
+
+-- 13)
+-- SELECT departament, MIN(data_alta) AS antiguitat FROM empleats GROUP BY departament ORDER BY antiguitat ASC;
+
+-- 14)
+-- SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes FROM empleats LEFT JOIN clients ON empleats.codi = clients.empleat LEFT JOIN comandes ON clients.codi = comandes.codi_client GROUP BY empleats.codi, empleats.cognom ORDER BY empleats.cognom;
+
+-- 15)
+-- SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes FROM empleats LEFT JOIN clients ON empleats.codi = clients.empleat LEFT JOIN comandes ON clients.codi = comandes.codi_client GROUP BY empleats.codi, empleats.cognom HAVING COUNT(comandes.codi) > 3 ORDER BY COUNT(comandes.codi) DESC;
+
+-- 16)
+-- SELECT productes.codi, productes.descripcio, detall.preu, comandes.data_time FROM productes JOIN detall ON productes.codi = detall.codiProducte JOIN comandes ON detall.codiComanda = comandes.codi WHERE comandes.data_time = (SELECT MAX(data_time) FROM comandes);
+
+-- 17)
+-- SELECT clients.codi, clients.nom FROM clients JOIN comandes ON clients.codi = comandes.codi_client WHERE YEAR(comandes.data_time) = 2016 AND comandes.import_total > (clients.limit_credit * 0.5);
