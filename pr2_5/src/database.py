@@ -33,7 +33,7 @@ def check_db():
             exit()
 
         conn = sqlite3.connect(DB_FILE)
-        with open(SQL_FILE, "r") as f:
+        with open(SQL_FILE, "r") as f: 
             sql = f.read()
             conn.executescript(sql)
         conn.close()
