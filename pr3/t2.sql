@@ -95,29 +95,45 @@ INSERT INTO comandes (numComanda, codiProducte, codiVenedor, nif, datatime, unit
 (6, 1, 6, '44444444D', '2023-04-11 13:20:00', 1),
 (7, 2, 7, '55555555E', '2023-04-10 16:50:00', 3);
 
--- DELETE FROM productes WHERE estoc = 0;
+-- Exercise 1
+DELETE FROM productes 
+WHERE estoc = 0;
 
--- UPDATE clients SET descompte = 1.5 WHERE nif IN (SELECT nif FROM clients ORDER BY ROWID LIMIT 3);
+-- Exercise 2 
+UPDATE clients SET descompte = 1.5 
+WHERE nif IN (
+    SELECT nif 
+    FROM clients 
+    ORDER BY ROWID LIMIT 3
+    );
  
---
+-- Exercise 3
 
--- SELECT centres.ciutat, centres.zona, venedors.nom, venedors.edat FROM centres INNER JOIN venedors ON venedors.codiCentre=centres.codi WHERE edat > 20 AND edat < 27 ORDER BY edat;
+-- Exercise 4 
+SELECT centres.ciutat, centres.zona, venedors.nom, venedors.edat
+FROM centres 
+INNER JOIN venedors ON venedors.codiCentre=centres.codi 
+WHERE edat > 20 AND edat < 27 
+ORDER BY edat;
 
--- SELECT c.nif, SUM(p.preu * co.unitats * (1 - c.descompte/100)) AS total_import
---  FROM clients c
---  JOIN comandes co ON c.nif = co.nif
---  JOIN productes p ON co.codiProducte = p.codi
---  WHERE SUBSTR(co.datatime, 1, 4) = '2023'
---  GROUP BY c.nif;
+-- Exercise 5
+SELECT c.nif, SUM(p.preu * co.unitats * (1 - c.descompte/100)) AS total_import
+FROM clients c
+JOIN comandes co ON c.nif = co.nif
+JOIN productes p ON co.codiProducte = p.codi
+WHERE SUBSTR(co.datatime, 1, 4) = '2023'
+GROUP BY c.nif;
 
--- SELECT v.nom, SUM(c.unitats) as total_units_sold
---  FROM venedors v
---  INNER JOIN comandes c ON v.codi = c.codiVenedor
---  GROUP BY v.codi
---  ORDER BY total_units_sold DESC
---  LIMIT 10;
+-- Exercise 6
+SELECT v.nom, SUM(c.unitats) as total_units_sold
+FROM venedors v
+INNER JOIN comandes c ON v.codi = c.codiVenedor
+GROUP BY v.codi
+ORDER BY total_units_sold DESC
+LIMIT 10;
 
--- SELECT p.*
---   FROM productes p
---  LEFT JOIN comandes c ON p.codi = c.codiProducte
---  WHERE c.numComanda IS NULL;
+-- Exercise 7
+SELECT p.*
+FROM productes p
+LEFT JOIN comandes c ON p.codi = c.codiProducte
+WHERE c.numComanda IS NULL;

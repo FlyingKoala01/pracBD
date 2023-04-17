@@ -119,58 +119,105 @@ INSERT INTO detall (codiComanda, codiProducte, quantitat, preu) VALUES
     (5, 3, 2, 50),
     (5, 5, 1, 500);
 
--- 1) 
--- SELECT e.codi, e.cognom, d.numero, d.nom 
--- FROM empleats e 
--- INNER JOIN departaments d ON e.departament = d.numero;
+-- Exercise 1 & 5
+SELECT e.codi, e.cognom, d.numero, d.nom 
+FROM empleats e 
+INNER JOIN departaments d ON e.departament = d.numero;
 
--- 2)
--- SELECT d.numero, d.nom, MAX(e.salari) AS "MaxSalary"
--- FROM departaments d 
--- INNER JOIN empleats e ON e.departament = d.numero 
--- GROUP BY d.numero, d.nom;
+-- Exercise 2 & 6
+SELECT d.numero, d.nom, MAX(e.salari) AS "MaxSalary"
+FROM departaments d 
+INNER JOIN empleats e ON e.departament = d.numero 
+GROUP BY d.numero, d.nom;
 
--- 4)
--- SELECT c.*, e.cognom AS "Representative"
--- FROM clients c 
--- INNER JOIN empleats e ON c.empleat = e.codi;
+-- Exercise 3
 
--- 7)
--- SELECT e.*
--- FROM empleats e 
--- INNER JOIN (
---  SELECT departament, AVG(salari) AS "AvgSalary" 
---  FROM empleats 
---  GROUP BY departament
--- ) AS avgs ON e.departament = avgs.departament 
--- WHERE e.salari > avgs.AvgSalary;
+-- Exercise 4
+SELECT c.*, e.cognom AS "Representative"
+FROM clients c 
+INNER JOIN empleats e ON c.empleat = e.codi;
 
--- 8)
--- SELECT * FROM empleats WHERE ofici = (SELECT ofici FROM empleats WHERE cognom = 'SALA');
+-- Exercise 7
+SELECT e.*
+FROM empleats e 
+INNER JOIN (
+    SELECT departament, AVG(salari) AS "AvgSalary" 
+    FROM empleats 
+    GROUP BY departament
+) AS avgs ON e.departament = avgs.departament 
+WHERE e.salari > avgs.AvgSalary;
 
--- 9)
--- SELECT nom, ofici FROM empleats WHERE departament = 20 AND ofici IN (SELECT ofici FROM empleats WHERE departament = (SELECT numero FROM departaments WHERE nom = 'VENDES'));
+-- Exercise 8
+SELECT * FROM empleats 
+WHERE ofici = (
+    SELECT ofici FROM empleats WHERE cognom = 'Smith'
+);
 
--- 10)
--- SELECT * FROM empleats WHERE ofici = 'NEGRO' OR salari >= (SELECT salari FROM empleats WHERE cognom = 'GIL');
+-- Exercise 9
+SELECT cognom, ofici FROM empleats 
+WHERE departament = 20 AND ofici IN (
+    SELECT ofici FROM empleats 
+    WHERE departament = (
+        SELECT numero FROM departaments 
+        WHERE nom = 'vendes'
+        )
+);
 
--- 11)
--- SELECT empleats.codi, empleats.cognom, departaments.nom FROM empleats JOIN departaments ON empleats.departament = departaments.numero WHERE empleats.codi IN (SELECT cap FROM empleats) ORDER BY empleats.cognom;
+-- Exercise 10
+SELECT * FROM empleats 
+WHERE ofici = 'Ward' OR salari >= (
+    SELECT salari FROM empleats WHERE cognom = 'Jones'
+    );
 
--- 12)
--- SELECT departament, SUM(salari) AS import_global FROM empleats GROUP BY departament ORDER BY import_global DESC;
+-- Exercise 11
+SELECT empleats.codi, empleats.cognom, departaments.nom FROM empleats 
+JOIN departaments ON empleats.departament = departaments.numero 
+WHERE empleats.codi IN (
+    SELECT cap FROM empleats
+    ) 
+    ORDER BY empleats.cognom;
 
--- 13)
--- SELECT departament, MIN(data_alta) AS antiguitat FROM empleats GROUP BY departament ORDER BY antiguitat ASC;
+-- Exercise 12
+SELECT departament, SUM(salari) AS import_global 
+FROM empleats 
+GROUP BY departament 
+ORDER BY import_global DESC;
 
--- 14)
--- SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes FROM empleats LEFT JOIN clients ON empleats.codi = clients.empleat LEFT JOIN comandes ON clients.codi = comandes.codi_client GROUP BY empleats.codi, empleats.cognom ORDER BY empleats.cognom;
+-- Exercise 13
+SELECT departament, MIN(data_alta) AS antiguitat 
+FROM empleats 
+GROUP BY departament 
+ORDER BY antiguitat ASC;
 
--- 15)
--- SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes FROM empleats LEFT JOIN clients ON empleats.codi = clients.empleat LEFT JOIN comandes ON clients.codi = comandes.codi_client GROUP BY empleats.codi, empleats.cognom HAVING COUNT(comandes.codi) > 3 ORDER BY COUNT(comandes.codi) DESC;
+-- Exercise 14
+SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes 
+FROM empleats 
+LEFT JOIN clients ON empleats.codi = clients.empleat 
+LEFT JOIN comandes ON clients.codi = comandes.codi_client 
+GROUP BY empleats.codi, empleats.cognom 
+ORDER BY empleats.cognom;
 
--- 16)
--- SELECT productes.codi, productes.descripcio, detall.preu, comandes.data_time FROM productes JOIN detall ON productes.codi = detall.codiProducte JOIN comandes ON detall.codiComanda = comandes.codi WHERE comandes.data_time = (SELECT MAX(data_time) FROM comandes);
+-- Exercise 15
+SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes 
+FROM empleats 
+LEFT JOIN clients ON empleats.codi = clients.empleat 
+LEFT JOIN comandes ON clients.codi = comandes.codi_client 
+GROUP BY empleats.codi, empleats.cognom 
+HAVING COUNT(comandes.codi) > 3 
+ORDER BY COUNT(comandes.codi) DESC;
 
--- 17)
--- SELECT clients.codi, clients.nom FROM clients JOIN comandes ON clients.codi = comandes.codi_client WHERE YEAR(comandes.data_time) = 2016 AND comandes.import_total > (clients.limit_credit * 0.5);
+-- Exercise 16
+SELECT productes.codi, productes.descripcio, detall.preu, comandes.data_time 
+FROM productes 
+JOIN detall ON productes.codi = detall.codiProducte 
+JOIN comandes ON detall.codiComanda = comandes.codi 
+WHERE comandes.data_time = (
+    SELECT MAX(data_time) 
+    FROM comandes
+    );
+
+-- Exercise 17
+SELECT clients.codi, clients.nom 
+FROM clients 
+JOIN comandes ON clients.codi = comandes.codi_client 
+WHERE comandes.data_time = 2023 AND comandes.import_total > (clients.limit_credit * 0.5);
