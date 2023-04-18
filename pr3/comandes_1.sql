@@ -1,5 +1,4 @@
--- Prac3
-
+-- Sqlite3
 PRAGMA foreign_keys=ON;
 
 -- Tables
@@ -108,12 +107,14 @@ WHERE nif IN (
     );
  
 -- Exercise 3
+SELECT *
+FROM productes
+WHERE estoc > 0;
 
 -- Exercise 4 
 SELECT centres.ciutat, centres.zona, venedors.nom, venedors.edat
-FROM centres 
-INNER JOIN venedors ON venedors.codiCentre=centres.codi 
-WHERE edat > 20 AND edat < 27 
+FROM centres INNER JOIN venedors ON venedors.codiCentre=centres.codi 
+WHERE edat >= 21 AND edat <= 26 
 ORDER BY edat;
 
 -- Exercise 5
@@ -121,7 +122,7 @@ SELECT c.nif, SUM(p.preu * co.unitats * (1 - c.descompte/100)) AS total_import
 FROM clients c
 JOIN comandes co ON c.nif = co.nif
 JOIN productes p ON co.codiProducte = p.codi
-WHERE SUBSTR(co.datatime, 1, 4) = '2023'
+WHERE SUBSTR(co.datatime, 1, 4) = '2016'
 GROUP BY c.nif;
 
 -- Exercise 6
@@ -129,7 +130,7 @@ SELECT v.nom, SUM(c.unitats) as total_units_sold
 FROM venedors v
 INNER JOIN comandes c ON v.codi = c.codiVenedor
 GROUP BY v.codi
-ORDER BY total_units_sold DESC
+--ORDER BY total_units_sold DESC
 LIMIT 10;
 
 -- Exercise 7
@@ -137,3 +138,15 @@ SELECT p.*
 FROM productes p
 LEFT JOIN comandes c ON p.codi = c.codiProducte
 WHERE c.numComanda IS NULL;
+
+-- Additional 1
+-- All commands of client in DB
+SELECT clients.nif, COUNT(comandes.nif) as 'comandes fetes'
+FROM clients JOIN comandes on clients.nif = comandes.nif
+GROUP BY clients.nif;
+
+-- Additional 2
+-- All products that client x has
+SELECT p.*
+FROM productes p JOIN comandes c on p.codi = c.codiProducte
+WHERE c.nif = (SELECT nif FROM clients LIMIT 1);

@@ -1,3 +1,4 @@
+-- Sqlite3
 PRAGMA foreign_keys=ON;
 
 -- Tables
@@ -128,11 +129,9 @@ INNER JOIN departaments d ON e.departament = d.numero;
 SELECT d.numero, d.nom, MAX(e.salari) AS "MaxSalary"
 FROM departaments d 
 INNER JOIN empleats e ON e.departament = d.numero 
-GROUP BY d.numero, d.nom;
+GROUP BY d.numero;
 
--- Exercise 3
-
--- Exercise 4
+-- Exercise 3 & 4
 SELECT c.*, e.cognom AS "Representative"
 FROM clients c 
 INNER JOIN empleats e ON c.empleat = e.codi;
@@ -140,12 +139,9 @@ INNER JOIN empleats e ON c.empleat = e.codi;
 -- Exercise 7
 SELECT e.*
 FROM empleats e 
-INNER JOIN (
-    SELECT departament, AVG(salari) AS "AvgSalary" 
-    FROM empleats 
-    GROUP BY departament
-) AS avgs ON e.departament = avgs.departament 
-WHERE e.salari > avgs.AvgSalary;
+WHERE e.salari > AVG(
+    (SELECT salari from empleats WHERE departament = e.departament)
+);
 
 -- Exercise 8
 SELECT * FROM empleats 
@@ -170,12 +166,12 @@ WHERE ofici = 'Ward' OR salari >= (
     );
 
 -- Exercise 11
-SELECT empleats.codi, empleats.cognom, departaments.nom FROM empleats 
-JOIN departaments ON empleats.departament = departaments.numero 
+SELECT empleats.codi, empleats.cognom, departaments.nom
+FROM empleats JOIN departaments ON empleats.departament = departaments.numero 
 WHERE empleats.codi IN (
     SELECT cap FROM empleats
-    ) 
-    ORDER BY empleats.cognom;
+    )
+ORDER BY empleats.cognom;
 
 -- Exercise 12
 SELECT departament, SUM(salari) AS import_global 
@@ -192,32 +188,47 @@ ORDER BY antiguitat ASC;
 -- Exercise 14
 SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes 
 FROM empleats 
-LEFT JOIN clients ON empleats.codi = clients.empleat 
-LEFT JOIN comandes ON clients.codi = comandes.codi_client 
-GROUP BY empleats.codi, empleats.cognom 
+JOIN clients ON empleats.codi = clients.empleat 
+JOIN comandes ON clients.codi = comandes.codi_client 
+GROUP BY empleats.codi
 ORDER BY empleats.cognom;
 
 -- Exercise 15
 SELECT empleats.codi, empleats.cognom, COUNT(comandes.codi) AS nombre_comandes 
 FROM empleats 
-LEFT JOIN clients ON empleats.codi = clients.empleat 
-LEFT JOIN comandes ON clients.codi = comandes.codi_client 
-GROUP BY empleats.codi, empleats.cognom 
+JOIN clients ON empleats.codi = clients.empleat 
+JOIN comandes ON clients.codi = comandes.codi_client
+GROUP BY empleats.codi
 HAVING COUNT(comandes.codi) > 3 
 ORDER BY COUNT(comandes.codi) DESC;
 
 -- Exercise 16
-SELECT productes.codi, productes.descripcio, detall.preu, comandes.data_time 
+SELECT productes.codi, productes.descripcio, detall.preu, MAX(comandes.data_time)
 FROM productes 
 JOIN detall ON productes.codi = detall.codiProducte 
-JOIN comandes ON detall.codiComanda = comandes.codi 
-WHERE comandes.data_time = (
-    SELECT MAX(data_time) 
-    FROM comandes
-    );
+JOIN comandes ON detall.codiComanda = comandes.codi
+GROUP BY productes.codi;
 
 -- Exercise 17
 SELECT clients.codi, clients.nom 
 FROM clients 
-JOIN comandes ON clients.codi = comandes.codi_client 
-WHERE comandes.data_time = 2023 AND comandes.import_total > (clients.limit_credit * 0.5);
+JOIN comandes ON clients.codi = comandes.codi_client
+WHERE SUBSTR(comandes.data_time, 1, 4) = '2016' AND comandes.import_total > (clients.limit_credit * 0.5)
+GROUP BY clients.codi;
+
+-- Extra 1
+-- Money wasted per client
+SELECT clients.codi, clients.nom, SUM(detall.import_total) AS 'Money spent'
+FROM clients JOIN comandes ON clients.codi = comandes.codi_client
+             JOIN detall ON detall.codiComanda = comandes.codi
+GROUP BY clients.codi
+ORDER BY SUM(detall.import_total) DESC;
+
+-- Extra 2
+-- Money wasted from clients referred by employees
+SELECT empleat.codi, clients.cognom, SUM(detall.import_total) AS 'Money made spent'
+FROM empleats JOIN clients ON clients.empleat = empleat.codi
+              JOIN comandes ON clients.codi = comandes.codi_client
+              JOIN detall ON detall.codiComanda = comandes.codi
+GROUP BY empleats.codi
+ORDER BY SUM(detall.import_total) DESC;

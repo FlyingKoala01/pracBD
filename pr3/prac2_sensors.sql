@@ -1,14 +1,16 @@
 /*
-sqlite3 sensors.bd < sensorsCreation.sql >out.txt
+sqlite3 sensors.bd < t2_4.sql
 */
+
 CREATE TABLE IF NOT EXISTS sensors (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- result_time  DATETIME,
- epoch INT,
- nodeid INT,
- light INT,
- temp INT,
- voltage INT) ;
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    result_time  DATETIME,
+    epoch INT,
+    nodeid INT,
+    light INT,
+    temp INT,
+    voltage INT
+);
 
 
 INSERT INTO sensors (result_time,epoch,nodeid,light,temp,voltage) VALUES ('2015-03-05 09:10:18',639,1,555,26,400);
@@ -40,14 +42,85 @@ INSERT INTO sensors (result_time,epoch,nodeid,light,temp,voltage) VALUES (DATETI
 INSERT INTO sensors (result_time,epoch,nodeid,light,temp,voltage) VALUES (DATETIME('now'),729,3,568,15,534);
 
 
-CREATE TABLE calib_temp as select temp, avg(temp)+temp as calib from sensors group by temp;
-CREATE TABLE calib_light as select light, avg(light)+light as calib from sensors group by light;
+CREATE TABLE IF NOT EXISTS calib_temp as select temp, avg(temp)+temp as calib from sensors group by temp;
+CREATE TABLE IF NOT EXISTS calib_light as select light, avg(light)+light as calib from sensors group by light;
+
+--.headers ON
 
 -- Exercise 7
-SELECT s1.result_time, s1.temp AS sensor1_temp, s2.temp AS sensor2_temp, s3.temp AS sensor3_temp
-FROM sensors s1
-JOIN sensors s2 ON s1.epoch = s2.epoch
-JOIN sensors s3 ON s1.epoch = s3.epoch
-WHERE s1.temp IS NOT NULL OR s2.temp IS NOT NULL OR s3.temp IS NOT NULL;
+SELECT epoch, IFNULL((SELECT temp FROM sensors WHERE nodeid=1 AND epoch<=s.epoch ORDER BY epoch DESC LIMIT 1), 'null') as s1,
+              IFNULL((SELECT temp FROM sensors WHERE nodeid=2 AND epoch<=s.epoch ORDER BY epoch DESC LIMIT 1), 'null') as s2,
+              IFNULL((SELECT temp FROM sensors WHERE nodeid=3 AND epoch<=s.epoch ORDER BY epoch DESC LIMIT 1), 'null') as s3
+FROM sensors s
+GROUP BY epoch;
+
+-- Implementacio alternativa, utilitzant case i joint
+-- SELECT s1.epoch,
+--     CASE
+--         WHEN s1.temp IS NOT NULL THEN s1.temp
+--         WHEN (
+--             SELECT temp
+--             FROM sensors
+--             WHERE epoch < s1.epoch AND nodeid = 1
+--             LIMIT 1
+--         ) IS NOT NULL THEN (
+--             SELECT temp
+--             FROM sensors
+--             WHERE epoch < s1.epoch AND nodeid = 1
+--             LIMIT 1
+--         )
+--         ELSE 'null'
+--     END AS 's1',
+--     CASE
+--         WHEN s2.temp IS NOT NULL THEN s2.temp
+--         WHEN (
+--             SELECT temp
+--             FROM sensors
+--             WHERE epoch < s1.epoch AND nodeid = 2
+--             LIMIT 1
+--         ) IS NOT NULL THEN (
+--             SELECT temp
+--             FROM sensors
+--             WHERE epoch < s1.epoch AND nodeid = 2
+--             LIMIT 1
+--         )
+--         ELSE 'null'
+--     END AS 's2',
+--     CASE
+--         WHEN s2.temp IS NOT NULL THEN s2.temp
+--         WHEN (
+--             SELECT temp
+--             FROM sensors
+--             WHERE epoch < s1.epoch AND nodeid = 3
+--             LIMIT 1
+--         ) IS NOT NULL THEN (
+--             SELECT temp
+--             FROM sensors
+--             WHERE epoch < s1.epoch AND nodeid = 3
+--             LIMIT 1
+--         )
+--         ELSE 'null'
+--     END AS 's3'
+-- FROM sensors s1
+-- LEFT OUTER JOIN sensors s2 ON s1.epoch = s2.epoch
+-- LEFT OUTER JOIN sensors s3 ON s1.epoch = s3.epoch
+-- GROUP BY s1.epoch;
 
 -- Exercise 8
+-- The only way we managed to make a range.
+-- We are not very confidents about this query :D
+WITH RECURSIVE numbers AS (
+  SELECT 639 AS num
+  UNION ALL
+  SELECT num + 1
+  FROM numbers
+  WHERE num < 735
+)
+SELECT num
+FROM numbers
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM sensors
+  WHERE epoch = num
+);
+
