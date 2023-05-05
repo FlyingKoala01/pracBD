@@ -64,7 +64,7 @@ class Toplevel1:
 
         self.top = top
 
-        self.Button1 = tk.Button(self.top)
+        self.Button1 = tk.Button(self.top,command=self.spawn_top_level_3)
         self.Button1.place(relx=0.013, rely=0.899, height=24, width=147)
         self.Button1.configure(activebackground="beige")
         self.Button1.configure(activeforeground="black")
@@ -76,7 +76,7 @@ class Toplevel1:
         self.Button1.configure(highlightcolor="black")
         self.Button1.configure(pady="0")
         self.Button1.configure(text='''Eliminar Seleccionat''')
-        self.Button2 = tk.Button(self.top)
+        self.Button2 = tk.Button(self.top, command=self.spawn_top_level_2)
         self.Button2.place(relx=0.613, rely=0.893, height=24, width=147)
         self.Button2.configure(activebackground="beige")
         self.Button2.configure(activeforeground="black")
@@ -255,6 +255,152 @@ class Toplevel1:
         print("test_sortir")
         self.top.destroy()
     
+    def spawn_top_level_2(self):
+        # Creates a toplevel widget.
+        global _top2, _w2
+        _top2 = tk.Toplevel(root)
+        _w2 = Toplevel2(_top2)
+
+    def spawn_top_level_3(self):
+        # Creates a toplevel widget.
+        global _top3, _w3
+        _top3 = tk.Toplevel(root)
+        _w3 = Toplevel3(_top3)
+
+    
+class Toplevel2:
+    def __init__(self, top=None):
+        '''This class configures and populates the toplevel window.
+           top is the toplevel containing window.'''
+
+        top.geometry("278x120+720+540")
+        top.minsize(120, 1)
+        top.maxsize(3844, 1061)
+        top.resizable(1,  1)
+        top.title("Modificar Contacte")
+        top.configure(background="#d9d9d9")
+
+        self.top = top
+
+        self.Label4 = tk.Label(self.top)
+        self.Label4.place(relx=0.036, rely=0.083, height=21, width=64)
+        self.Label4.configure(anchor='w')
+        self.Label4.configure(background="#d9d9d9")
+        self.Label4.configure(compound='left')
+        self.Label4.configure(disabledforeground="#a3a3a3")
+        self.Label4.configure(foreground="blue")
+        self.Label4.configure(text='''Name:''')
+        self.Label5 = tk.Label(self.top)
+        self.Label5.place(relx=0.036, rely=0.25, height=21, width=77)
+        self.Label5.configure(anchor='w')
+        self.Label5.configure(background="#d9d9d9")
+        self.Label5.configure(compound='left')
+        self.Label5.configure(disabledforeground="#a3a3a3")
+        self.Label5.configure(foreground="blue")
+        self.Label5.configure(text='''Telèfon antic:''')
+        self.Label6 = tk.Label(self.top)
+        self.Label6.place(relx=0.036, rely=0.417, height=21, width=72)
+        self.Label6.configure(anchor='w')
+        self.Label6.configure(background="#d9d9d9")
+        self.Label6.configure(compound='left')
+        self.Label6.configure(disabledforeground="#a3a3a3")
+        self.Label6.configure(foreground="blue")
+        self.Label6.configure(text='''Nou telèfon:''')
+        self.Message3 = tk.Message(self.top)
+        self.Message3.place(relx=0.36, rely=0.083, relheight=0.158
+                , relwidth=0.432)
+        self.Message3.configure(background="#d9d9d9")
+        self.Message3.configure(foreground="#000000")
+        self.Message3.configure(highlightbackground="#d9d9d9")
+        self.Message3.configure(highlightcolor="black")
+        self.Message3.configure(padx="1")
+        self.Message3.configure(pady="1")
+        self.Message3.configure(text='''Message''')
+        self.Message3.configure(width=120)
+        self.Message4 = tk.Message(self.top)
+        self.Message4.place(relx=0.36, rely=0.25, relheight=0.158
+                , relwidth=0.432)
+        self.Message4.configure(background="#d9d9d9")
+        self.Message4.configure(foreground="#000000")
+        self.Message4.configure(highlightbackground="#d9d9d9")
+        self.Message4.configure(highlightcolor="black")
+        self.Message4.configure(padx="1")
+        self.Message4.configure(pady="1")
+        self.Message4.configure(text='''Message''')
+        self.Message4.configure(width=120)
+        self.Text4 = tk.Text(self.top)
+        self.Text4.place(relx=0.36, rely=0.417, relheight=0.2, relwidth=0.482)
+        self.Text4.configure(background="white")
+        self.Text4.configure(font="TkTextFont")
+        self.Text4.configure(foreground="black")
+        self.Text4.configure(highlightbackground="#d9d9d9")
+        self.Text4.configure(highlightcolor="black")
+        self.Text4.configure(insertbackground="black")
+        self.Text4.configure(selectbackground="#c4c4c4")
+        self.Text4.configure(selectforeground="black")
+        self.Text4.configure(wrap="word")
+        self.Button6 = tk.Button(self.top)
+        self.Button6.place(relx=0.54, rely=0.75, height=24, width=117)
+        self.Button6.configure(activebackground="beige")
+        self.Button6.configure(activeforeground="black")
+        self.Button6.configure(background="#d9d9d9")
+        self.Button6.configure(compound='left')
+        self.Button6.configure(disabledforeground="#a3a3a3")
+        self.Button6.configure(foreground="blue")
+        self.Button6.configure(highlightbackground="#d9d9d9")
+        self.Button6.configure(highlightcolor="black")
+        self.Button6.configure(pady="0")
+        self.Button6.configure(text='''Modificar Contacte''')
+
+class Toplevel3:
+    def __init__(self, top=None):
+        '''This class configures and populates the toplevel window.
+           top is the toplevel containing window.'''
+
+        top.geometry("283x136+381+536")
+        top.minsize(120, 1)
+        top.maxsize(3844, 1061)
+        top.resizable(1,  1)
+        top.title("Eliminar Contacte")
+        top.configure(background="#d9d9d9")
+
+        self.top = top
+
+        self.Button7 = tk.Button(self.top)
+        self.Button7.place(relx=0.177, rely=0.662, height=34, width=64)
+        self.Button7.configure(activebackground="beige")
+        self.Button7.configure(activeforeground="black")
+        self.Button7.configure(background="#d9d9d9")
+        self.Button7.configure(compound='left')
+        self.Button7.configure(disabledforeground="#a3a3a3")
+        self.Button7.configure(foreground="red")
+        self.Button7.configure(highlightbackground="#d9d9d9")
+        self.Button7.configure(highlightcolor="black")
+        self.Button7.configure(pady="0")
+        self.Button7.configure(text='''Eliminar''')
+        self.Message6 = tk.Message(self.top)
+        self.Message6.place(relx=0.283, rely=0.147, relheight=0.36
+                , relwidth=0.495)
+        self.Message6.configure(background="#d9d9d9")
+        self.Message6.configure(foreground="#000000")
+        self.Message6.configure(highlightbackground="#d9d9d9")
+        self.Message6.configure(highlightcolor="black")
+        self.Message6.configure(padx="1")
+        self.Message6.configure(pady="1")
+        self.Message6.configure(text='''Hey! Estas segur de eliminar aquest contacte?''')
+        self.Message6.configure(width=140)
+        self.Button8 = tk.Button(self.top)
+        self.Button8.place(relx=0.53, rely=0.662, height=34, width=87)
+        self.Button8.configure(activebackground="beige")
+        self.Button8.configure(activeforeground="black")
+        self.Button8.configure(background="#d9d9d9")
+        self.Button8.configure(compound='left')
+        self.Button8.configure(disabledforeground="#a3a3a3")
+        self.Button8.configure(foreground="Blue")
+        self.Button8.configure(highlightbackground="#d9d9d9")
+        self.Button8.configure(highlightcolor="black")
+        self.Button8.configure(pady="0")
+        self.Button8.configure(text='''Torna al menu''')
 
 
 # The following code is added to facilitate the Scrolled widgets you specified.
@@ -376,6 +522,7 @@ def start_up():
     global _top1, _w1
     _top1 = root
     _w1 = Toplevel1(_top1)
+
     root.mainloop()
 
 
