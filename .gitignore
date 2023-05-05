@@ -7,3 +7,6 @@ pr1_2/src/spot_data.dat
 pr1_2/src/spot_data.test.dat
 pr1_2/src/__pycache__
 pr1_2/doc/build
+
+pr5/__pycache__
+pr5/backups
