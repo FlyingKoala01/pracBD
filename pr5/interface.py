@@ -185,6 +185,7 @@ class Toplevel1:
                 , relwidth=0.613)
         self.Scrolledtreeview1.configure(columns=("Nom", "Tel"))
         self.Scrolledtreeview1.column("#0", width=0, stretch=tk.NO)
+        self.Scrolledtreeview1.configure(selectmode="browse") 
         # build_treeview_support starting.
         self.Scrolledtreeview1.heading("Nom",text="Nom")
         self.Scrolledtreeview1.heading("Nom",anchor="center")
@@ -239,33 +240,44 @@ class Toplevel1:
         self.Canvas2.create_image(0, 0, anchor=NW, image=self.img1)
 
     def afegir_contacte(self):
-        print("test_afegir")
         nom = self.Text1.get('1.0', 'end-1c')
         tel = self.Text2.get('1.0', 'end-1c')
         self.Message1.configure(text='Contacte Afegit: ' + nom + ' - ' + tel, foreground='red')
         queries.insert_contact(nom, tel)
+        self.mostrar_contactes()
 
     def mostrar_contactes(self):
+
+        for row in self.Scrolledtreeview1.get_children():
+            self.Scrolledtreeview1.delete(row)
+
         contacts = queries.show_contacts()
         for contact in contacts:
             self.Scrolledtreeview1.insert('', 'end', values=f"{contact[1]}\t{contact[2]}")
 
 
     def sortir(self):
-        print("test_sortir")
         self.top.destroy()
     
-    def spawn_top_level_2(self):
-        # Creates a toplevel widget.
-        global _top2, _w2
-        _top2 = tk.Toplevel(root)
-        _w2 = Toplevel2(_top2)
 
+    # Modify contact
+    def spawn_top_level_2(self):
+        selected_item = self.Scrolledtreeview1.selection()
+        if selected_item:
+            # Creates a toplevel widget.
+            global _top2, _w2
+            _top2 = tk.Toplevel(root)
+            _w2 = Toplevel2(_top2)
+
+
+    # Delete contact
     def spawn_top_level_3(self):
-        # Creates a toplevel widget.
-        global _top3, _w3
-        _top3 = tk.Toplevel(root)
-        _w3 = Toplevel3(_top3)
+        selected_item = self.Scrolledtreeview1.selection()
+        if selected_item:
+            # Creates a toplevel widget.
+            global _top3, _w3
+            _top3 = tk.Toplevel(root)
+            _w3 = Toplevel3(_top3)
 
     
 class Toplevel2:
@@ -281,6 +293,9 @@ class Toplevel2:
         top.configure(background="#d9d9d9")
 
         self.top = top
+
+        contact = _w1.Scrolledtreeview1.selection()
+        name, phone = _w1.Scrolledtreeview1.item(contact, 'values')
 
         self.Label4 = tk.Label(self.top)
         self.Label4.place(relx=0.036, rely=0.083, height=21, width=64)
@@ -315,7 +330,7 @@ class Toplevel2:
         self.Message3.configure(highlightcolor="black")
         self.Message3.configure(padx="1")
         self.Message3.configure(pady="1")
-        self.Message3.configure(text='''Message''')
+        self.Message3.configure(text=f'{name}')
         self.Message3.configure(width=120)
         self.Message4 = tk.Message(self.top)
         self.Message4.place(relx=0.36, rely=0.25, relheight=0.158
@@ -326,7 +341,7 @@ class Toplevel2:
         self.Message4.configure(highlightcolor="black")
         self.Message4.configure(padx="1")
         self.Message4.configure(pady="1")
-        self.Message4.configure(text='''Message''')
+        self.Message4.configure(text=f'{phone}')
         self.Message4.configure(width=120)
         self.Text4 = tk.Text(self.top)
         self.Text4.place(relx=0.36, rely=0.417, relheight=0.2, relwidth=0.482)
@@ -339,7 +354,7 @@ class Toplevel2:
         self.Text4.configure(selectbackground="#c4c4c4")
         self.Text4.configure(selectforeground="black")
         self.Text4.configure(wrap="word")
-        self.Button6 = tk.Button(self.top)
+        self.Button6 = tk.Button(self.top, command=lambda: self.modify_contact(name))
         self.Button6.place(relx=0.54, rely=0.75, height=24, width=117)
         self.Button6.configure(activebackground="beige")
         self.Button6.configure(activeforeground="black")
@@ -351,6 +366,12 @@ class Toplevel2:
         self.Button6.configure(highlightcolor="black")
         self.Button6.configure(pady="0")
         self.Button6.configure(text='''Modificar Contacte''')
+    
+    def modify_contact(self, nom):
+        new_phone = self.Text4.get('1.0', 'end-1c')
+        queries.modify_phone(nom,new_phone)
+        _w1.mostrar_contactes()
+        self.top.destroy()
 
 class Toplevel3:
     def __init__(self, top=None):
@@ -366,7 +387,7 @@ class Toplevel3:
 
         self.top = top
 
-        self.Button7 = tk.Button(self.top)
+        self.Button7 = tk.Button(self.top, command=self.delete_contact)
         self.Button7.place(relx=0.177, rely=0.662, height=34, width=64)
         self.Button7.configure(activebackground="beige")
         self.Button7.configure(activeforeground="black")
@@ -389,7 +410,7 @@ class Toplevel3:
         self.Message6.configure(pady="1")
         self.Message6.configure(text='''Hey! Estas segur de eliminar aquest contacte?''')
         self.Message6.configure(width=140)
-        self.Button8 = tk.Button(self.top)
+        self.Button8 = tk.Button(self.top, command=self.sortir)
         self.Button8.place(relx=0.53, rely=0.662, height=34, width=87)
         self.Button8.configure(activebackground="beige")
         self.Button8.configure(activeforeground="black")
@@ -401,6 +422,16 @@ class Toplevel3:
         self.Button8.configure(highlightcolor="black")
         self.Button8.configure(pady="0")
         self.Button8.configure(text='''Torna al menu''')
+    
+    def delete_contact(self):
+        contact = _w1.Scrolledtreeview1.selection()
+        name,_ = _w1.Scrolledtreeview1.item(contact, 'values')
+        queries.delete_contact(name)
+        _w1.mostrar_contactes()
+        self.top.destroy()
+
+    def sortir(self):
+        self.top.destroy()
 
 
 # The following code is added to facilitate the Scrolled widgets you specified.

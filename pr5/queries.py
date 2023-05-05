@@ -32,7 +32,7 @@ def commit_and_close(func):
 @commit_and_close
 def modify_phone(conn, name, phone):
     query = f"UPDATE contacts SET phone_number = ? WHERE name = ?;"
-    conn.execute(query, (name, phone,))
+    conn.execute(query, (phone, name,))
 
 @commit_and_close
 def modify_name(conn, name, new_name):
