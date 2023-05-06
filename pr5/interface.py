@@ -6,7 +6,7 @@ import os.path
 from PIL import ImageTk, Image
 
 import queries
-
+import input_manager
 _script = os.path.abspath(__file__)
 _location = os.path.dirname(_script)
 
@@ -88,18 +88,6 @@ class Toplevel1:
         self.Button2.configure(highlightcolor="black")
         self.Button2.configure(pady="0")
         self.Button2.configure(text='''Modificar seleccionat''')
-        self.Button3 = tk.Button(self.top, command=self.mostrar_contactes)
-        self.Button3.place(relx=0.028, rely=0.3, height=24, width=147)
-        self.Button3.configure(activebackground="beige")
-        self.Button3.configure(activeforeground="black")
-        self.Button3.configure(background="#d9d9d9")
-        self.Button3.configure(compound='left')
-        self.Button3.configure(disabledforeground="#a3a3a3")
-        self.Button3.configure(foreground="blue")
-        self.Button3.configure(highlightbackground="#d9d9d9")
-        self.Button3.configure(highlightcolor="black")
-        self.Button3.configure(pady="0")
-        self.Button3.configure(text='''Mostrar Contactes''')
         self.menubar = tk.Menu(top,font="TkMenuFont",bg=_bgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
 
@@ -239,15 +227,22 @@ class Toplevel1:
 
         self.Canvas2.create_image(0, 0, anchor=NW, image=self.img1)
 
+        self.mostrar_contactes()
+
     def afegir_contacte(self):
-        nom = self.Text1.get('1.0', 'end-1c')
-        tel = self.Text2.get('1.0', 'end-1c')
-        self.Message1.configure(text='Contacte Afegit: ' + nom + ' - ' + tel, foreground='red')
-        queries.insert_contact(nom, tel)
+        nom = self.Text1.get('1.0', 'end')
+        tel = self.Text2.get('1.0', 'end')
+        if (input_manager.valid_name(nom) and input_manager.valid_phone(tel)):
+            queries.insert_contact(nom, tel)
+            self.Message1.configure(text='Contacte Afegit: \n' + nom + ' - ' + tel, foreground='red')
+        else:
+            self.Message1.configure(text='Format Incorrecte', foreground='red')
+
+        self.Text1.delete('1.0', END)
+        self.Text2.delete('1.0', END)
         self.mostrar_contactes()
 
     def mostrar_contactes(self):
-
         for row in self.Scrolledtreeview1.get_children():
             self.Scrolledtreeview1.delete(row)
 
