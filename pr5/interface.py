@@ -211,14 +211,14 @@ class Toplevel1:
         self.Button4.configure(pady="0")
         self.Button4.configure(text='''Sortir''')
         self.Message1 = tk.Message(self.top)
-        self.Message1.place(relx=0.867, rely=0.49, relheight=0.17, relwidth=0.12)
+        self.Message1.place(relx=0.807, rely=0.432, relheight=0.314, relwidth=0.179)
 
         self.Message1.configure(background="#d9d9d9")
         self.Message1.configure(highlightbackground="#d9d9d9")
         self.Message1.configure(highlightcolor="black")
         self.Message1.configure(padx="1")
         self.Message1.configure(pady="1")
-        self.Message1.configure(width=80)
+        self.Message1.configure(width=120)
 
         image_file = os.path.join(_location, "upc.png")
         self.img1 = Image.open(image_file)
@@ -230,11 +230,11 @@ class Toplevel1:
         self.mostrar_contactes()
 
     def afegir_contacte(self):
-        nom = self.Text1.get('1.0', 'end')
-        tel = self.Text2.get('1.0', 'end')
+        nom = self.Text1.get('1.0', 'end').rstrip('\n')
+        tel = self.Text2.get('1.0', 'end').rstrip('\n')
         if (input_manager.valid_name(nom) and input_manager.valid_phone(tel)):
             queries.insert_contact(nom, tel)
-            self.Message1.configure(text='Contacte Afegit: \n' + nom + ' - ' + tel, foreground='red')
+            self.Message1.configure(text='Contacte Afegit: \n' + 'Nom: ' + nom + '\n' + 'Tel: ' +  tel, foreground='red')
         else:
             self.Message1.configure(text='Format Incorrecte', foreground='red')
 
@@ -248,7 +248,8 @@ class Toplevel1:
 
         contacts = queries.show_contacts()
         for contact in contacts:
-            self.Scrolledtreeview1.insert('', 'end', values=f"{contact[1]}\t{contact[2]}")
+            new_tel = contact[2].replace(" ", "\ ")
+            self.Scrolledtreeview1.insert('', 'end', values=f"{contact[1]}\t{new_tel}")
 
 
     def sortir(self):
