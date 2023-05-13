@@ -1,11 +1,9 @@
-
 import sqlite3
-#import csv
 import os 
 
 
-DB_FILE = "contacts.db"
-SQL_FILE= "contacts.sql"
+DB_FILE = os.path.join(os.path.dirname(__file__), "db/contacts.db")
+SQL_FILE= os.path.join(os.path.dirname(__file__), "db/contacts.sql")
 
 def check_db():
     if not os.path.isfile(DB_FILE):

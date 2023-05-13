@@ -1,10 +1,9 @@
-
 import sqlite3
-
 from os import path
+from database import DB_FILE
+
 
 PROJECT_ABS_PATH = path.dirname(path.abspath(__file__))
-DB_FILE_PATH = f"{PROJECT_ABS_PATH}/contacts.db"
 
 
 def commit_and_close(func):
@@ -13,7 +12,7 @@ def commit_and_close(func):
     The decorator connects to the DB before executing any query. Commits the query, closes the DB and returns the result.
     """
     def wrapper(*args, **kwargs):
-        conn = sqlite3.connect(DB_FILE_PATH)
+        conn = sqlite3.connect(DB_FILE)
         conn.execute("PRAGMA foreign_keys=ON;")
         try:
             result = func(conn, *args, **kwargs)

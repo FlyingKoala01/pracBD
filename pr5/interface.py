@@ -4,11 +4,12 @@ import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
 from PIL import ImageTk, Image
+from tkinter import filedialog
 
 import queries
 import input_manager
 _script = os.path.abspath(__file__)
-_location = os.path.dirname(_script)
+_images = os.path.join(os.path.dirname(__file__), "db/images")
 
 _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
 _fgcolor = '#000000'  # X11 color: 'black'
@@ -53,10 +54,8 @@ class Toplevel1:
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
 
-        top.geometry("669x347+346+136")
-        top.minsize(120, 1)
-        top.maxsize(1540, 845)
-        top.resizable(1,  1)
+        top.geometry("800x500+346+136")
+        top.resizable(0,  0)
         top.title("Dipse Gestor de Contactes")
         top.configure(background="#d9d9d9")
         top.configure(highlightbackground="#d9d9d9")
@@ -101,7 +100,7 @@ class Toplevel1:
         self.Frame1.configure(highlightbackground="#d9d9d9")
         self.Frame1.configure(highlightcolor="black")
         self.Label2 = tk.Label(self.Frame1)
-        self.Label2.place(relx=0.04, rely=0.167, height=26, width=71)
+        self.Label2.place(relx=0.04, rely=0.167, height=24, width=71)
         self.Label2.configure(activebackground="#f9f9f9")
         self.Label2.configure(anchor='w')
         self.Label2.configure(background="#d9d9d9")
@@ -122,8 +121,31 @@ class Toplevel1:
         self.Label3.configure(highlightbackground="#d9d9d9")
         self.Label3.configure(highlightcolor="black")
         self.Label3.configure(text='''Telèfon:''')
+        self.Label7 = tk.Label(self.Frame1)
+        self.Label7.place(relx=0.04, rely=0.620, height=24, width=44)
+        self.Label7.configure(activebackground="#f9f9f9")
+        self.Label7.configure(anchor='w')
+        self.Label7.configure(background="#d9d9d9")
+        self.Label7.configure(compound='left')
+        self.Label7.configure(disabledforeground="#a3a3a3")
+        self.Label7.configure(foreground="blue")
+        self.Label7.configure(highlightbackground="#d9d9d9")
+        self.Label7.configure(highlightcolor="black")
+        self.Label7.configure(text='''Imatge:''')
+        self.Button7 = tk.Button(self.Frame1, command=self.browse_file)
+        self.Button7.place(relx=0.7, rely=0.62, height=26, width=75)
+        self.Button7.configure(activebackground="beige")
+        self.Button7.configure(activeforeground="black")
+        self.Button7.configure(background="#d9d9d9")
+        self.Button7.configure(disabledforeground="#a3a3a3")
+        self.Button7.configure(foreground="blue")
+        self.Button7.configure(highlightbackground="#d9d9d9")
+        self.Button7.configure(highlightcolor="black")
+        self.Button7.configure(pady="0")
+        self.Button7.configure(text='''Browse...''')
+
         self.Text1 = tk.Text(self.Frame1)
-        self.Text1.place(relx=0.283, rely=0.167, relheight=0.15, relwidth=0.474)
+        self.Text1.place(relx=0.283, rely=0.167, relheight=0.11, relwidth=0.474)
         self.Text1.configure(background="white")
         self.Text1.configure(font="TkTextFont")
         self.Text1.configure(foreground="black")
@@ -134,7 +156,7 @@ class Toplevel1:
         self.Text1.configure(selectforeground="black")
         self.Text1.configure(wrap="word")
         self.Text2 = tk.Text(self.Frame1)
-        self.Text2.place(relx=0.283, rely=0.417, relheight=0.15, relwidth=0.478)
+        self.Text2.place(relx=0.283, rely=0.417, relheight=0.11, relwidth=0.478)
         self.Text2.configure(background="white")
         self.Text2.configure(font="TkTextFont")
         self.Text2.configure(foreground="black")
@@ -144,8 +166,19 @@ class Toplevel1:
         self.Text2.configure(selectbackground="#c4c4c4")
         self.Text2.configure(selectforeground="black")
         self.Text2.configure(wrap="word")
+        self.Text3 = tk.Text(self.Frame1, state="disabled")
+        self.Text3.place(relx=0.283, rely=0.617, relheight=0.11, relwidth=0.400)
+        self.Text3.configure(background="white")
+        self.Text3.configure(font="TkTextFont")
+        self.Text3.configure(foreground="black")
+        self.Text3.configure(highlightbackground="#d9d9d9")
+        self.Text3.configure(highlightcolor="black")
+        self.Text3.configure(insertbackground="black")
+        self.Text3.configure(selectbackground="#c4c4c4")
+        self.Text3.configure(selectforeground="black")
+        self.Text3.configure(wrap="word")
         self.Button5 = tk.Button(self.Frame1, command=self.afegir_contacte)
-        self.Button5.place(relx=0.445, rely=0.667, height=24, width=120)
+        self.Button5.place(relx=0.545, rely=0.800, height=24, width=120)
         self.Button5.configure(activebackground="beige")
         self.Button5.configure(activeforeground="black")
         self.Button5.configure(background="#d9d9d9")
@@ -169,24 +202,35 @@ class Toplevel1:
         self.Label1.configure(text='''Nou Registre''')
         _style_code()
         self.Scrolledtreeview1 = ScrolledTreeView(self.top)
-        self.Scrolledtreeview1.place(relx=0.179, rely=0.403, relheight=0.478
-                , relwidth=0.613)
+        self.Scrolledtreeview1.bind("<<TreeviewSelect>>", self.treeview_select)
+        self.Scrolledtreeview1.place(relx=0.300, rely=0.403, relheight=0.478
+                , relwidth=0.500)
         self.Scrolledtreeview1.configure(columns=("Nom", "Tel"))
         self.Scrolledtreeview1.column("#0", width=0, stretch=tk.NO)
         self.Scrolledtreeview1.configure(selectmode="browse") 
         # build_treeview_support starting.
         self.Scrolledtreeview1.heading("Nom",text="Nom")
         self.Scrolledtreeview1.heading("Nom",anchor="center")
-        self.Scrolledtreeview1.column("Nom",width="195")
-        self.Scrolledtreeview1.column("Nom",minwidth="20")
+        self.Scrolledtreeview1.column("Nom",width="120")
         self.Scrolledtreeview1.column("Nom",stretch="1")
         self.Scrolledtreeview1.column("Nom",anchor="w")
         self.Scrolledtreeview1.heading("Tel",text="Tel.")
         self.Scrolledtreeview1.heading("Tel",anchor="center")
-        self.Scrolledtreeview1.column("Tel",width="196")
-        self.Scrolledtreeview1.column("Tel",minwidth="20")
+        self.Scrolledtreeview1.column("Tel",width="120")
         self.Scrolledtreeview1.column("Tel",stretch="1")
         self.Scrolledtreeview1.column("Tel",anchor="w")
+
+        self.Canvas1 = tk.Canvas(self.top)
+        self.Canvas1.place(relx=0.012, rely=0.429, relheight=0.346, relwidth=0.200)
+        self.Canvas1.configure(background="white")
+        self.Canvas1.configure(borderwidth="2")
+        self.Canvas1.configure(highlightbackground="#d9d9d9")
+        self.Canvas1.configure(highlightcolor="black")
+        self.Canvas1.configure(insertbackground="black")
+        self.Canvas1.configure(relief="ridge")
+        self.Canvas1.configure(selectbackground="#c4c4c4")
+        self.Canvas1.configure(selectforeground="black")
+
         self.Canvas2 = tk.Canvas(self.top)
         self.Canvas2.place(relx=0.045, rely=0.029, relheight=0.245
                 , relwidth=0.522)
@@ -220,9 +264,9 @@ class Toplevel1:
         self.Message1.configure(pady="1")
         self.Message1.configure(width=120)
 
-        image_file = os.path.join(_location, "upc.png")
+        image_file = os.path.join(_images, "upc.png")
         self.img1 = Image.open(image_file)
-        self.img1 = self.img1.resize((350, 95), Image.ANTIALIAS)
+        self.img1 = self.img1.resize((420, 122), Image.ANTIALIAS)
         self.img1 = ImageTk.PhotoImage(self.img1)
 
         self.Canvas2.create_image(0, 0, anchor=NW, image=self.img1)
@@ -250,6 +294,32 @@ class Toplevel1:
         for contact in contacts:
             new_tel = contact[2].replace(" ", "\ ")
             self.Scrolledtreeview1.insert('', 'end', values=f"{contact[1]}\t{new_tel}")
+
+    def browse_file(self):
+        filepath = filedialog.askopenfilename(title="Select file", filetypes=[("Image files", "*.jpg *.png")])
+        if filepath:
+            self.Text3.configure(state="normal")
+            self.Text3.delete("1.0", tk.END)
+            self.Text3.insert("1.0", filepath)
+            self.Text3.configure(state="disabled")
+
+    def treeview_select(self, event):
+        print("SQL GET PNG IMAGE USER")
+        # Get the selected item
+        #selection = self.Scrolledtreeview1.selection()
+        #if len(selection) == 1:
+        #    item = selection[0]
+            # Get the image path
+        #    image_path = os.path.join(_images, item + ".png")
+            # Load the image
+        #    image = Image.open(image_path)
+            # Resize the image to fit the canvas
+        #    image = image.resize((300, 300), Image.ANTIALIAS)
+            # Convert the image to Tkinter format
+        #    photo = ImageTk.PhotoImage(image)
+            # Display the image on the canvas
+        #    self.Canvas1.create_image(0, 0, anchor='nw', image=photo)
+        #    self.Canvas1.image = photo
 
 
     def sortir(self):
@@ -281,10 +351,8 @@ class Toplevel2:
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
 
-        top.geometry("278x120+720+540")
-        top.minsize(120, 1)
-        top.maxsize(3844, 1061)
-        top.resizable(1,  1)
+        top.geometry("300x140+720+540")
+        top.resizable(0,  0)
         top.title("Modificar Contacte")
         top.configure(background="#d9d9d9")
 
@@ -317,6 +385,40 @@ class Toplevel2:
         self.Label6.configure(disabledforeground="#a3a3a3")
         self.Label6.configure(foreground="blue")
         self.Label6.configure(text='''Nou telèfon:''')
+        self.Label7 = tk.Label(self.top)
+        self.Label7.place(relx=0.036, rely=0.583, height=21, width=72)
+        self.Label7.configure(anchor='w')
+        self.Label7.configure(background="#d9d9d9")
+        self.Label7.configure(compound='left')
+        self.Label7.configure(disabledforeground="#a3a3a3")
+        self.Label7.configure(foreground="blue")
+        self.Label7.configure(text='''Imatge:''')
+
+        self.Text3 = tk.Text(self.top, state="disabled")
+        self.Text3.place(relx=0.36, rely=0.583, relheight=0.14, relwidth=0.332)
+        self.Text3.configure(background="white")
+        self.Text3.configure(font="TkTextFont")
+        self.Text3.configure(foreground="black")
+        self.Text3.configure(highlightbackground="#d9d9d9")
+        self.Text3.configure(highlightcolor="black")
+        self.Text3.configure(insertbackground="black")
+        self.Text3.configure(selectbackground="#c4c4c4")
+        self.Text3.configure(selectforeground="black")
+        self.Text3.configure(wrap="word")
+
+        self.Button7 = tk.Button(self.top, command=self.browse_file)
+        self.Button7.place(relx=0.7, rely=0.583, height=23, width=65)
+        self.Button7.configure(activebackground="beige")
+        self.Button7.configure(activeforeground="black")
+        self.Button7.configure(background="#d9d9d9")
+        self.Button7.configure(compound='left')
+        self.Button7.configure(disabledforeground="#a3a3a3")
+        self.Button7.configure(foreground="blue")
+        self.Button7.configure(highlightbackground="#d9d9d9")
+        self.Button7.configure(highlightcolor="black")
+        self.Button7.configure(pady="0")
+        self.Button7.configure(text='''Browse...''')
+
         self.Message3 = tk.Message(self.top)
         self.Message3.place(relx=0.36, rely=0.083, relheight=0.158
                 , relwidth=0.432)
@@ -340,7 +442,7 @@ class Toplevel2:
         self.Message4.configure(text=f'{phone}')
         self.Message4.configure(width=120)
         self.Text4 = tk.Text(self.top)
-        self.Text4.place(relx=0.36, rely=0.417, relheight=0.2, relwidth=0.482)
+        self.Text4.place(relx=0.36, rely=0.417, relheight=0.14, relwidth=0.482)
         self.Text4.configure(background="white")
         self.Text4.configure(font="TkTextFont")
         self.Text4.configure(foreground="black")
@@ -351,7 +453,7 @@ class Toplevel2:
         self.Text4.configure(selectforeground="black")
         self.Text4.configure(wrap="word")
         self.Button6 = tk.Button(self.top, command=lambda: self.modify_contact(name))
-        self.Button6.place(relx=0.54, rely=0.75, height=24, width=117)
+        self.Button6.place(relx=0.60, rely=0.80, height=24, width=117)
         self.Button6.configure(activebackground="beige")
         self.Button6.configure(activeforeground="black")
         self.Button6.configure(background="#d9d9d9")
@@ -368,6 +470,15 @@ class Toplevel2:
         queries.modify_phone(nom,new_phone)
         _w1.mostrar_contactes()
         self.top.destroy()
+
+    def browse_file(self):
+        filepath = filedialog.askopenfilename(title="Select file", filetypes=[("Image files", "*.jpg *.png")])
+        if filepath:
+            self.Text3.configure(state="normal")
+            self.Text3.delete("1.0", tk.END)
+            self.Text3.insert("1.0", filepath)
+            self.Text3.configure(state="disabled")
+
 
 class Toplevel3:
     def __init__(self, top=None):
