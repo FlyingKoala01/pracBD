@@ -9,14 +9,14 @@ CREATE TABLE contacts (
 );
 
 -- Insert sample data
-INSERT INTO contacts (name, phone_number, filename) VALUES ('Alice', '938720000', 'upc.png');
-INSERT INTO contacts (name, phone_number) VALUES ('Alice', '666666666');
-INSERT INTO contacts (name, phone_number) VALUES ('Bob', '938720000');
-INSERT INTO contacts (name, phone_number) VALUES ('Charlie', '938720001');
-INSERT INTO contacts (name, phone_number) VALUES ('David', '938720002');
-INSERT INTO contacts (name, phone_number) VALUES ('Emily', '938720003');
-INSERT INTO contacts (name, phone_number) VALUES ('Frank', '938720004');
-INSERT INTO contacts (name, phone_number) VALUES ('Grace', '938720005');
-INSERT INTO contacts (name, phone_number) VALUES ('Harry', '938720006');
-INSERT INTO contacts (name, phone_number) VALUES ('Isabelle', '938720007');
-INSERT INTO contacts (name, phone_number) VALUES ('Jacob', '938720008');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Alice', '938720000', 'alice.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Alice', '666666666', 'alice.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Bob', '938720000', 'bob.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Charlie', '938720001', 'charlie.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('David', '938720002', 'david.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Emily', '938720003', 'emily.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Frank', '938720004', 'frank.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Grace', '938720005', 'grace.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Harry', '938720006', 'harry.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Isabelle', '938720007', 'isabelle.png');
+INSERT INTO contacts (name, phone_number, filename) VALUES ('Jacob', '938720008', 'jacob.png');
