@@ -9,7 +9,6 @@ from tkinter import filedialog
 import queries
 import input_manager
 _script = os.path.abspath(__file__)
-_images = os.path.join(os.path.dirname(__file__), "db/images")
 
 _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
 _fgcolor = '#000000'  # X11 color: 'black'
@@ -76,7 +75,7 @@ class Toplevel1:
         self.Button1.configure(pady="0")
         self.Button1.configure(text='''Eliminar Seleccionat''')
         self.Button2 = tk.Button(self.top, command=self.spawn_top_level_2)
-        self.Button2.place(relx=0.613, rely=0.893, height=24, width=147)
+        self.Button2.place(relx=0.513, rely=0.893, height=24, width=185)
         self.Button2.configure(activebackground="beige")
         self.Button2.configure(activeforeground="black")
         self.Button2.configure(background="#d9d9d9")
@@ -190,7 +189,7 @@ class Toplevel1:
         self.Button5.configure(pady="0")
         self.Button5.configure(text='''Afegir Contacte''')
         self.Label1 = tk.Label(self.top)
-        self.Label1.place(relx=0.673, rely=0.0, height=24, width=71)
+        self.Label1.place(relx=0.673, rely=0.0, height=24, width=90)
         self.Label1.configure(activebackground="#f9f9f9")
         self.Label1.configure(anchor='w')
         self.Label1.configure(background="#d9d9d9")
@@ -205,10 +204,11 @@ class Toplevel1:
         self.Scrolledtreeview1.bind("<<TreeviewSelect>>", self.treeview_select)
         self.Scrolledtreeview1.place(relx=0.300, rely=0.403, relheight=0.478
                 , relwidth=0.500)
-        self.Scrolledtreeview1.configure(columns=("Nom", "Tel"))
+        self.Scrolledtreeview1.configure(columns=("ID", "Nom", "Tel"))
         self.Scrolledtreeview1.column("#0", width=0, stretch=tk.NO)
         self.Scrolledtreeview1.configure(selectmode="browse") 
         # build_treeview_support starting.
+        self.Scrolledtreeview1.column("ID",width=0, stretch=False)
         self.Scrolledtreeview1.heading("Nom",text="Nom")
         self.Scrolledtreeview1.heading("Nom",anchor="center")
         self.Scrolledtreeview1.column("Nom",width="120")
@@ -264,7 +264,7 @@ class Toplevel1:
         self.Message1.configure(pady="1")
         self.Message1.configure(width=120)
 
-        image_file = os.path.join(_images, "upc.png")
+        image_file = os.path.join(os.path.dirname(__file__), "upc.png")
         self.img1 = Image.open(image_file)
         self.img1 = self.img1.resize((420, 122), Image.ANTIALIAS)
         self.img1 = ImageTk.PhotoImage(self.img1)
@@ -276,14 +276,21 @@ class Toplevel1:
     def afegir_contacte(self):
         nom = self.Text1.get('1.0', 'end').rstrip('\n')
         tel = self.Text2.get('1.0', 'end').rstrip('\n')
-        if (input_manager.valid_name(nom) and input_manager.valid_phone(tel)):
-            queries.insert_contact(nom, tel)
-            self.Message1.configure(text='Contacte Afegit: \n' + 'Nom: ' + nom + '\n' + 'Tel: ' +  tel, foreground='red')
+        filename = self.Text3.get('1.0', 'end').rstrip('\n')
+        if (input_manager.valid_name(nom) and input_manager.valid_phone(tel)) and (filename == "" or input_manager.valid_image(filename)):
+            if not queries.exists(nom, tel):
+                queries.insert_contact(nom, tel, filename if filename!='' else None)
+                self.Message1.configure(text='Contacte Afegit: \n' + 'Nom: ' + nom + '\n' + 'Tel: ' +  tel, foreground='red')
+            else:
+                self.Message1.configure(text='Combinacio nom-tel existent', foreground='red')
         else:
             self.Message1.configure(text='Format Incorrecte', foreground='red')
 
         self.Text1.delete('1.0', END)
         self.Text2.delete('1.0', END)
+        self.Text3.configure(state="normal")
+        self.Text3.delete('1.0', tk.END)
+        self.Text3.configure(state="disabled")
         self.mostrar_contactes()
 
     def mostrar_contactes(self):
@@ -293,7 +300,7 @@ class Toplevel1:
         contacts = queries.show_contacts()
         for contact in contacts:
             new_tel = contact[2].replace(" ", "\ ")
-            self.Scrolledtreeview1.insert('', 'end', values=f"{contact[1]}\t{new_tel}")
+            self.Scrolledtreeview1.insert('', 'end', values=f"{contact[0]}\t{contact[1]}\t{new_tel}")
 
     def browse_file(self):
         filepath = filedialog.askopenfilename(title="Select file", filetypes=[("Image files", "*.jpg *.png")])
@@ -304,22 +311,28 @@ class Toplevel1:
             self.Text3.configure(state="disabled")
 
     def treeview_select(self, event):
-        print("SQL GET PNG IMAGE USER")
-        # Get the selected item
-        #selection = self.Scrolledtreeview1.selection()
-        #if len(selection) == 1:
-        #    item = selection[0]
+        #Get the selected item
+        selection = self.Scrolledtreeview1.selection()
+        if selection:
+            contact_id, _, _ = _w1.Scrolledtreeview1.item(selection, 'values')
+
+            filename = queries.get_image_from_id(contact_id)
+
+            if filename == None:
+                self.Canvas1.create_image(0, 0, anchor='nw', image=None)
+                self.Canvas1.image = None
+                return
+
             # Get the image path
-        #    image_path = os.path.join(_images, item + ".png")
-            # Load the image
-        #    image = Image.open(image_path)
-            # Resize the image to fit the canvas
-        #    image = image.resize((300, 300), Image.ANTIALIAS)
-            # Convert the image to Tkinter format
-        #    photo = ImageTk.PhotoImage(image)
-            # Display the image on the canvas
-        #    self.Canvas1.create_image(0, 0, anchor='nw', image=photo)
-        #    self.Canvas1.image = photo
+            image_path = os.path.join(queries._images, filename)
+            #Load the image
+            image = Image.open(image_path)
+            image.thumbnail((300, 300))
+            #Convert the image to Tkinter format
+            photo = ImageTk.PhotoImage(image)
+            #Display the image on the canvas
+            self.Canvas1.create_image(0, 0, anchor='nw', image=photo)
+            self.Canvas1.image = photo
 
 
     def sortir(self):
@@ -359,7 +372,7 @@ class Toplevel2:
         self.top = top
 
         contact = _w1.Scrolledtreeview1.selection()
-        name, phone = _w1.Scrolledtreeview1.item(contact, 'values')
+        id, name, phone = _w1.Scrolledtreeview1.item(contact, 'values')
 
         self.Label4 = tk.Label(self.top)
         self.Label4.place(relx=0.036, rely=0.083, height=21, width=64)
@@ -386,7 +399,7 @@ class Toplevel2:
         self.Label6.configure(foreground="blue")
         self.Label6.configure(text='''Nou telèfon:''')
         self.Label7 = tk.Label(self.top)
-        self.Label7.place(relx=0.036, rely=0.583, height=21, width=72)
+        self.Label7.place(relx=0.036, rely=0.583, height=21, width=90)
         self.Label7.configure(anchor='w')
         self.Label7.configure(background="#d9d9d9")
         self.Label7.configure(compound='left')
@@ -452,7 +465,7 @@ class Toplevel2:
         self.Text4.configure(selectbackground="#c4c4c4")
         self.Text4.configure(selectforeground="black")
         self.Text4.configure(wrap="word")
-        self.Button6 = tk.Button(self.top, command=lambda: self.modify_contact(name))
+        self.Button6 = tk.Button(self.top, command=lambda: self.modify_contact(id, name))
         self.Button6.place(relx=0.60, rely=0.80, height=24, width=117)
         self.Button6.configure(activebackground="beige")
         self.Button6.configure(activeforeground="black")
@@ -465,9 +478,13 @@ class Toplevel2:
         self.Button6.configure(pady="0")
         self.Button6.configure(text='''Modificar Contacte''')
     
-    def modify_contact(self, nom):
+    def modify_contact(self, id, name):
         new_phone = self.Text4.get('1.0', 'end-1c')
-        queries.modify_phone(nom,new_phone)
+        new_image_path = self.Text3.get('1.0', 'end-1c')
+        if input_manager.valid_phone(new_phone) and not queries.exists(name, new_phone):
+            queries.modify_phone(id,new_phone)
+        if input_manager.valid_image(new_image_path):
+            queries.modify_image(id, new_image_path)
         _w1.mostrar_contactes()
         self.top.destroy()
 
@@ -518,7 +535,7 @@ class Toplevel3:
         self.Message6.configure(text='''Hey! Estas segur de eliminar aquest contacte?''')
         self.Message6.configure(width=140)
         self.Button8 = tk.Button(self.top, command=self.sortir)
-        self.Button8.place(relx=0.53, rely=0.662, height=34, width=87)
+        self.Button8.place(relx=0.53, rely=0.662, height=34, width=100)
         self.Button8.configure(activebackground="beige")
         self.Button8.configure(activeforeground="black")
         self.Button8.configure(background="#d9d9d9")
@@ -532,8 +549,8 @@ class Toplevel3:
     
     def delete_contact(self):
         contact = _w1.Scrolledtreeview1.selection()
-        name,_ = _w1.Scrolledtreeview1.item(contact, 'values')
-        queries.delete_contact(name)
+        id,_,_ = _w1.Scrolledtreeview1.item(contact, 'values')
+        queries.delete_contact(id)
         _w1.mostrar_contactes()
         self.top.destroy()
 

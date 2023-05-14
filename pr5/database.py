@@ -3,7 +3,7 @@ import os
 
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "db/contacts.db")
-SQL_FILE= os.path.join(os.path.dirname(__file__), "db/contacts.sql")
+SQL_FILE= os.path.join(os.path.dirname(__file__), "contacts.sql")
 
 def check_db():
     if not os.path.isfile(DB_FILE):
