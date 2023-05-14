@@ -9,5 +9,7 @@ pr1_2/src/__pycache__
 pr1_2/doc/build
 
 pr5/__pycache__
-pr5/backups
-pr5/contacts.db
+pr5/db/contacts.db
+
+/pr5/db/images/*
+!/pr5/db/images/.keep

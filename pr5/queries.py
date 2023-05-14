@@ -47,7 +47,7 @@ def copy_to_db(filepath):
 
 def delete_image_if_exists(conn, id):
     cursor = conn.execute("SELECT filename FROM contacts WHERE id = ?;", (id,))
-    filename = cursor.fetchall()[0]
+    filename = cursor.fetchall()[0][0]
     if filename != None:
         remove(path.join(_images, filename))
 
