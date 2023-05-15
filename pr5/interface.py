@@ -299,8 +299,9 @@ class Toplevel1:
 
         contacts = queries.show_contacts()
         for contact in contacts:
+            new_name = contact[1].replace(" ", "\ ")
             new_tel = contact[2].replace(" ", "\ ")
-            self.Scrolledtreeview1.insert('', 'end', values=f"{contact[0]}\t{contact[1]}\t{new_tel}")
+            self.Scrolledtreeview1.insert('', 'end', values=f"{contact[0]}\t{new_name}\t{new_tel}")
 
     def browse_file(self):
         filepath = filedialog.askopenfilename(title="Select file", filetypes=[("Image files", "*.jpg *.png")])
@@ -327,7 +328,7 @@ class Toplevel1:
             image_path = os.path.join(queries._images, filename)
             #Load the image
             image = Image.open(image_path)
-            image.thumbnail((300, 300))
+            image.thumbnail((175, 175))
             #Convert the image to Tkinter format
             photo = ImageTk.PhotoImage(image)
             #Display the image on the canvas
