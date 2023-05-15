@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-===============================
-DOCUMENTATION FIRST PART LAB 1
-===============================
+========================================
+DOCUMENTATION FIRST PART LAB 1 eric hola
+========================================
 
 .. image:: upc.jpg 	
    :width: 350
